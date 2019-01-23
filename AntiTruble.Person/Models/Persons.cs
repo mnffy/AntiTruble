@@ -1,7 +1,10 @@
-﻿namespace AntiTruble.Person.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AntiTruble.Person.Models
 {
     public partial class Persons
     {
+        [Key]
         public long PersonId { get; set; }
         public string Fio { get; set; }
         public string Password { get; set; }

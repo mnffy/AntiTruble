@@ -5,9 +5,11 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntiTruble.Repairs", "AntiTruble.Repairs\AntiTruble.Repairs.csproj", "{5658CE88-8D64-42C0-8944-76176629A6D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntiTruble.Person", "AntiTruble.Person\AntiTruble.Person.csproj", "{367CB83F-0037-48E6-9AB6-EFEDF4F533A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntiTruble.Person", "AntiTruble.Person\AntiTruble.Person.csproj", "{367CB83F-0037-48E6-9AB6-EFEDF4F533A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntiTruble.Equipment", "AntiTruble.Equipment\AntiTruble.Equipment.csproj", "{A7E1BBFF-FAEB-4169-9EA3-CAF148751600}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntiTruble.Equipment", "AntiTruble.Equipment\AntiTruble.Equipment.csproj", "{A7E1BBFF-FAEB-4169-9EA3-CAF148751600}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntiTruble.ClassLibrary", "AntiTruble.ClassLibrary\AntiTruble.ClassLibrary.csproj", "{7A2AB822-B579-477C-A1BC-3886953998F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{A7E1BBFF-FAEB-4169-9EA3-CAF148751600}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E1BBFF-FAEB-4169-9EA3-CAF148751600}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E1BBFF-FAEB-4169-9EA3-CAF148751600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A2AB822-B579-477C-A1BC-3886953998F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A2AB822-B579-477C-A1BC-3886953998F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A2AB822-B579-477C-A1BC-3886953998F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A2AB822-B579-477C-A1BC-3886953998F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
