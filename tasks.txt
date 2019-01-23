@@ -1,0 +1,3 @@
+EquipmentDefects remove status
+
+Equipments remove DefectId
