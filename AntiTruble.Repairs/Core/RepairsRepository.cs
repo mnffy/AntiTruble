@@ -1,4 +1,5 @@
-﻿using AntiTruble.Repairs.DataModels;
+﻿using System.Collections.Generic;
+using AntiTruble.Repairs.DataModels;
 using AntiTruble.Repairs.Enums;
 
 namespace AntiTruble.Repairs.Core
@@ -6,6 +7,11 @@ namespace AntiTruble.Repairs.Core
     public class RepairsRepository : IRepairsRepository
     {
         public void ChangeRepairStatus(long repairId, RepairStatuses status)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<RepairInfo> GetAllRepairs()
         {
             throw new System.NotImplementedException();
         }

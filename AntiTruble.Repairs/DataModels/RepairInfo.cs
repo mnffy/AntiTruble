@@ -1,6 +1,6 @@
 ﻿using AntiTruble.Equipment.DataModels;
+using AntiTruble.Person.Models;
 using AntiTruble.Repairs.Enums;
-using AntiTruble.Repairs.Models;
 using System;
 
 namespace AntiTruble.Repairs.DataModels

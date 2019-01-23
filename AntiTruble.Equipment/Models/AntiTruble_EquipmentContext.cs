@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AntiTruble.Repairs.Models
+namespace AntiTruble.Equipment.Models
 {
     public partial class AntiTruble_EquipmentContext : DbContext
     {
@@ -24,8 +24,6 @@ namespace AntiTruble.Repairs.Models
             {
                 entity.HasKey(e => e.DefectId);
 
-                entity.Property(e => e.DefectId).ValueGeneratedNever();
-
                 entity.Property(e => e.DefectName).HasMaxLength(50);
 
                 entity.Property(e => e.Price).HasColumnType("money");
@@ -34,8 +32,6 @@ namespace AntiTruble.Repairs.Models
             modelBuilder.Entity<Equipments>(entity =>
             {
                 entity.HasKey(e => e.EquipmentId);
-
-                entity.Property(e => e.EquipmentId).ValueGeneratedNever();
 
                 entity.Property(e => e.Name).HasMaxLength(50);
             });
