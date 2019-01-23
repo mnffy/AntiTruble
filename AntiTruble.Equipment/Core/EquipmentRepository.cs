@@ -1,30 +1,83 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AntiTruble.ClassLibrary;
 using AntiTruble.Equipment.DataModels;
 using AntiTruble.Equipment.Enums;
 using AntiTruble.Equipment.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace AntiTruble.Equipment.Core
 {
     public class EquipmentRepository : IEquipmentRepository
     {
-        public void AddDefect(string defectName, decimal? price = 0, DefectStatuses status = DefectStatuses.NotRepaired, long? equipmentId = null)
+        private readonly AntiTruble_EquipmentContext _context;
+        public EquipmentRepository(AntiTruble_EquipmentContext context)
         {
-            throw new System.NotImplementedException();
+            _context = context;
+        }
+        public async Task AddEquipment(string name, EquipmentTypes type, List<EquipmentDefects> defects, string fio)
+        {
+            var personMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                       new RestRequest("/GetPersonIdByFIO", Method.POST)
+                           .AddHeader("Content-type", "application/json")
+                           .AddJsonBody(new
+                           {
+                               fio
+                           })));
+            if (!personMksResult.Success)
+                throw new Exception(personMksResult.Data);
+            var equipment = new Equipments
+            {
+                EquipmentType = (byte)type,
+                Name = name,
+                OwnerId = long.Parse(personMksResult.Data)
+            };
+            _context.Equipments.Add(equipment);
+            foreach(var defect in defects)
+            {
+                _context.EquipmentDefects.Add(new EquipmentDefects
+                {
+                    DefectName = defect.DefectName,
+                    EquipmentId = equipment.EquipmentId,
+                    Price = defect.Price
+                });
+            }
+            await _context.SaveChangesAsync();
         }
 
-        public void AddEquipment(string name, EquipmentTypes type, List<EquipmentDefects> defects, string phoneNumber)
+        public async Task RemoveEquipment(long equipmentId)
         {
-            throw new System.NotImplementedException();
+            var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equipmentId);
+            if (defects != null)
+                _context.EquipmentDefects.RemoveRange(defects);
+            var equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.EquipmentId == equipmentId);
+            _context.Equipments.Remove(equipment);
+            _context.SaveChanges();
         }
 
-        public void RemoveEquipment(long equipmentId)
+        public async Task<IEnumerable<EquipmentInfo>> SearchEquipments(long personId)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public EquipmentInfo SearchEquipments(long personId)
-        {
-            throw new System.NotImplementedException();
+            var result = new List<EquipmentInfo>();
+            var equips = _context.Equipments.Where(x => x.OwnerId == personId);
+            foreach(var equip in equips)
+            {
+                var equipmentInfo = new EquipmentInfo
+                {
+                    EquipmentId = equip.EquipmentId,
+                    EquipmentType = (EquipmentTypes)equip.EquipmentType,
+                    Name = equip.Name
+                };
+                var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
+                if (defects != null)
+                    equipmentInfo.Defects = await defects.ToListAsync();
+                result.Add(equipmentInfo);
+            }
+            return result;
         }
     }
 }

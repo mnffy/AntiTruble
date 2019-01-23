@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AntiTruble.Repairs.Models
 {
     public partial class Repairs
     {
+        [Key]
         public long RepairId { get; set; }
         public byte? RepairType { get; set; }
         public byte? Status { get; set; }
