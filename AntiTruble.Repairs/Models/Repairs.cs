@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace AntiTruble.Models
+namespace AntiTruble.Repairs.Models
 {
     public partial class Repairs
     {

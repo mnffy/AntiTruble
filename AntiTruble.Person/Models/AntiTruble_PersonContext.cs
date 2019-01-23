@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AntiTruble.Repairs.Models
+namespace AntiTruble.Person.Models
 {
     public partial class AntiTruble_PersonContext : DbContext
     {
@@ -15,6 +15,7 @@ namespace AntiTruble.Repairs.Models
 
         public virtual DbSet<Persons> Persons { get; set; }
         
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.1-servicing-10028");
@@ -23,13 +24,9 @@ namespace AntiTruble.Repairs.Models
             {
                 entity.HasKey(e => e.PersonId);
 
-                entity.Property(e => e.PersonId).ValueGeneratedNever();
-
                 entity.Property(e => e.Address).HasMaxLength(50);
 
                 entity.Property(e => e.Balance).HasColumnType("money");
-
-                entity.Property(e => e.DateBirth).HasColumnType("date");
 
                 entity.Property(e => e.Fio)
                     .HasColumnName("FIO")

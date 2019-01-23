@@ -96,3 +96,11 @@ AntiTruble.Person/obj/Debug/netcoreapp2.1/AntiTruble.Person.pdb
 AntiTruble.Person/obj/Debug/netcoreapp2.1/AntiTruble.Person.csproj.FileListAbsolute.txt
 AntiTruble.Repairs/obj/Debug/netcoreapp2.1/AntiTruble.Repairs.pdb
 AntiTruble.Repairs/obj/Debug/netcoreapp2.1/AntiTruble.Repairs.dll
+AntiTruble.Repairs/bin/Debug/netcoreapp2.1/AntiTruble.Equipment.dll
+AntiTruble.Equipment/obj/Debug/netcoreapp2.1/AntiTruble.Equipment.csproj.CopyComplete
+AntiTruble.Equipment/bin/Debug/netcoreapp2.1/AntiTruble.Person.pdb
+AntiTruble.Equipment/bin/Debug/netcoreapp2.1/AntiTruble.Person.dll
+AntiTruble.Repairs/obj/Debug/netcoreapp2.1/AntiTruble.Repairs.csproj.CopyComplete
+AntiTruble.Repairs/bin/Debug/netcoreapp2.1/AntiTruble.Person.pdb
+AntiTruble.Repairs/bin/Debug/netcoreapp2.1/AntiTruble.Person.dll
+AntiTruble.Repairs/bin/Debug/netcoreapp2.1/AntiTruble.Equipment.pdb

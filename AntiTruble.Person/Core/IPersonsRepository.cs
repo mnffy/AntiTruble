@@ -1,5 +1,5 @@
 ﻿using AntiTruble.Person.Enums;
-using AntiTruble.Repairs.Models;
+using AntiTruble.Person.Models;
 using System;
 
 namespace AntiTruble.Person.Core

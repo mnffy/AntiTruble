@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AntiTruble.Models
+namespace AntiTruble.Repairs.Models
 {
     public partial class AntiTruble_RepairsContext : DbContext
     {
@@ -22,8 +22,6 @@ namespace AntiTruble.Models
             modelBuilder.Entity<Repairs>(entity =>
             {
                 entity.HasKey(e => e.RepairId);
-
-                entity.Property(e => e.RepairId).ValueGeneratedNever();
 
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
