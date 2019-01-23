@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AntiTruble.Person.Extentions;
 using AntiTruble.Person.Models;
@@ -51,6 +52,11 @@ namespace AntiTruble.Person.Core
             };
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Persons>> GetPersons()
+        {
+            throw new Exception ();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AntiTruble.Person.Enums;
 using AntiTruble.Person.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AntiTruble.Person.Core
@@ -11,5 +12,6 @@ namespace AntiTruble.Person.Core
         Task<bool> Authorize(string phoneNumber, string password);
         Task<long> GetPersonIdByFIO(string fio);
         Task<Persons> GetPersonById(long id);
+        Task<IEnumerable<Persons>> GetPersons();
     }
 }
