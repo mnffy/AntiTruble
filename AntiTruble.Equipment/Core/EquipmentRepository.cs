@@ -77,6 +77,8 @@ namespace AntiTruble.Equipment.Core
                     equipmentInfo.Defects = await defects.ToListAsync();
                 result.Add(equipmentInfo);
             }
+            if (!result.Any())
+                throw new Exception("Equipments not found");
             return result;
         }
     }

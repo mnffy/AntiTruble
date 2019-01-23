@@ -2,6 +2,7 @@
 using AntiTruble.Person.Models;
 using AntiTruble.Repairs.Enums;
 using System;
+using System.Collections.Generic;
 
 namespace AntiTruble.Repairs.DataModels
 {
@@ -14,7 +15,7 @@ namespace AntiTruble.Repairs.DataModels
         public DateTime? EndDate { get; set; }
         public Persons Client { get; set; }
         public Persons Master { get; set; }
-        public EquipmentInfo EquipmentInfo { get; set; }
+        public IEnumerable<EquipmentInfo> Equipments { get; set; }
         public decimal Cost { get; set; }
     }
 }

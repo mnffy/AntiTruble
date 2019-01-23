@@ -1,8 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AntiTruble.ClassLibrary;
+using AntiTruble.Equipment.DataModels;
+using AntiTruble.Person.Models;
 using AntiTruble.Repairs.DataModels;
 using AntiTruble.Repairs.Enums;
 using AntiTruble.Repairs.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace AntiTruble.Repairs.Core
 {
@@ -14,34 +22,131 @@ namespace AntiTruble.Repairs.Core
             _context = context;
         }
 
-        public Task ChangeRepairStatus(long repairId, RepairStatuses status)
+        public async Task ChangeRepairStatus(long repairId, RepairStatuses status)
+        {
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            if (repair == null)
+                throw new Exception("Repair not found");
+            repair.Status = (byte)status;
+            await _context.SaveChangesAsync();
+        }
+        public async Task<RepairStatuses> GetRepairStatus(long repairId)
+        {
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            if (repair == null)
+                throw new Exception("Repair not found");
+            return (RepairStatuses)repair.Status.Value;
+        }
+        public async Task<RepairInfo> GetRepairReport(long repairId)
+        {
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            var repairInfo = new RepairInfo();
+            if (repair == null)
+                throw new Exception("Repair not found");
+            var personMksResultWithClient = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                      new RestRequest("/GetPersonById", Method.POST)
+                          .AddHeader("Content-type", "application/json")
+                          .AddJsonBody(new
+                          {
+                              personId = repair.Client
+                          })));
+            if (!personMksResultWithClient.Success)
+                throw new Exception(personMksResultWithClient.Data);
+            var personMksResultWithMaster = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                      new RestRequest("/GetPersonById", Method.POST)
+                          .AddHeader("Content-type", "application/json")
+                          .AddJsonBody(new
+                          {
+                              personId = repair.Master
+                          })));
+            if (!personMksResultWithMaster.Success)
+                throw new Exception(personMksResultWithMaster.Data);
+            var master = JsonConvert.DeserializeObject<Persons>(personMksResultWithMaster.Data);
+            var client = JsonConvert.DeserializeObject<Persons>(personMksResultWithClient.Data);
+            var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                     new RestRequest("/SearchEquipments", Method.POST)
+                         .AddHeader("Content-type", "application/json")
+                         .AddJsonBody(new
+                         {
+                             personId = client.PersonId
+                         })));
+            if (!equipmentMksResult.Success)
+                throw new Exception(equipmentMksResult.Data);
+            var equipmentsInfo = JsonConvert.DeserializeObject<List<EquipmentInfo>>(equipmentMksResult.Data);
+            var cost = default(decimal);
+            foreach (var equip in equipmentsInfo)
+                cost += equip.Defects.Sum(x => x.Price.Value);
+            repairInfo.Status = (RepairStatuses)repair.Status.Value;
+            repairInfo.StartDate = repair.StartDate.Value;
+            repairInfo.EndDate = repair.EndDate.Value;
+            repairInfo.RepairId = repair.RepairId;
+            repairInfo.RepairType = (RepairTypes)repair.RepairType.Value;
+            repairInfo.Master = master;
+            repairInfo.Client = client;
+            repairInfo.Equipments = equipmentsInfo;
+            repairInfo.Cost = cost;
+            return repairInfo;
+        }
+        public async Task<IEnumerable<RepairInfo>> GetAllRepairs()
+        {
+            var repairIds = _context.Repairs.Select(x => x.RepairId);
+            var result = new List<RepairInfo>();
+            foreach(var repairId in repairIds)
+            {
+                try
+                {
+                    result.Add(await GetRepairReport(repairId));
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            return result;
+        }
+        public async Task<bool> TryToPayOrder(long repairId)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<IEnumerable<RepairInfo>> GetAllRepairs()
+        public async Task RepairApplication(string clientFIO, string masterFIO, long masterId, RepairTypes repairType, DateTime startDate, DateTime endDate)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<RepairInfo> GetRepairReport(long repairId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<RepairStatuses> GetRepairStatus(long personId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task RepairApplication(string name, string fio, RepairTypes repairType)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<bool> TryToPayOrder(long repairId)
-        {
-            throw new System.NotImplementedException();
+            var personMksResultWithClient = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                   new RestRequest("/GetPersonByFIO", Method.POST)
+                       .AddHeader("Content-type", "application/json")
+                       .AddJsonBody(new
+                       {
+                           fio = clientFIO
+                       })));
+            if (!personMksResultWithClient.Success)
+                throw new Exception(personMksResultWithClient.Data);
+            var personMksResultWithMaster = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                      new RestRequest("/GetPersonByFIO", Method.POST)
+                          .AddHeader("Content-type", "application/json")
+                          .AddJsonBody(new
+                          {
+                              fio = masterFIO
+                          })));
+            if (!personMksResultWithMaster.Success)
+                throw new Exception(personMksResultWithMaster.Data);
+            var master = JsonConvert.DeserializeObject<Persons>(personMksResultWithMaster.Data);
+            var client = JsonConvert.DeserializeObject<Persons>(personMksResultWithClient.Data);
+            var repair = new Models.Repairs
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                RepairType = (byte)repairType,
+                Status = (byte)RepairStatuses.EquipmentInCenter,
+                Client = client.PersonId,
+                Master = master.PersonId
+            };
+            _context.Repairs.Add(repair);
+            await _context.SaveChangesAsync();
         }
     }
 }
