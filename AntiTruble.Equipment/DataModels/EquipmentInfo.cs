@@ -1,6 +1,5 @@
 ﻿using AntiTruble.Equipment.Enums;
 using AntiTruble.Equipment.Models;
-using AntiTruble.Person.Models;
 using System.Collections.Generic;
 
 namespace AntiTruble.Equipment.DataModels

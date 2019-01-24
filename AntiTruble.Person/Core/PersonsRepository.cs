@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AntiTruble.Person.Enums;
 using AntiTruble.Person.Extentions;
+using AntiTruble.Person.JsonModels;
 using AntiTruble.Person.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,33 +33,48 @@ namespace AntiTruble.Person.Core
                 throw new Exception("Person not found");
             return person.PersonId;
         }
-        
-        public async Task<Persons> GetPersonById(long id)
+
+        public async Task<PersonModel> GetPersonById(long id)
         {
             var person = await _context.Persons.FirstOrDefaultAsync(x => x.PersonId == id);
             if (person == null)
                 throw new Exception("Person not found");
-            return person;
+            return new PersonModel
+            {
+                Address = person.Address,
+                Balance = person.Balance,
+                Fio = person.Fio,
+                Password = person.Password,
+                PhoneNumber = person.PhoneNumber,
+                Role = person.Role
+            };
         }
 
-        public async Task Registration(string fio, string password, string phoneNumber, string address, byte role = 1, DateTime? dateBirth = null, decimal? balance = 0)
+        public async Task Registration(PersonModel model)
         {
             var person = new Persons
             {
-                Fio = fio,
-                Password = SecurePasswordHasher.Decrypt(password),
-                Address = address,
-                Balance = balance,
-                PhoneNumber = phoneNumber,
-                Role = role
+                Fio = model.Fio,
+                Password = SecurePasswordHasher.Decrypt(model.Password),
+                Address = model.Password,
+                Balance = model.Balance ?? default(decimal),
+                PhoneNumber = model.PhoneNumber,
+                Role = model.Role ?? (byte)PersonTypes.Client
             };
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Persons>> GetPersons()
-        {
-            throw new Exception ();
-        }
+        public async Task<IEnumerable<PersonModel>> GetPersons() =>
+            await _context.Persons.Select(x =>
+            new PersonModel
+            {
+                Role = x.Role,
+                Address = x.Address,
+                Balance = x.Balance,
+                Fio = x.Fio,
+                Password = x.Password,
+                PhoneNumber = x.PhoneNumber
+            }).ToListAsync();
     }
 }
