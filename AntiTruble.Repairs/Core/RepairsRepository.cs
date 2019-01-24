@@ -7,6 +7,7 @@ using AntiTruble.Equipment.DataModels;
 using AntiTruble.Person.Models;
 using AntiTruble.Repairs.DataModels;
 using AntiTruble.Repairs.Enums;
+using AntiTruble.Repairs.JsonModel;
 using AntiTruble.Repairs.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -22,20 +23,20 @@ namespace AntiTruble.Repairs.Core
             _context = context;
         }
 
-        public async Task ChangeRepairStatus(long repairId, RepairStatuses status)
+        public async Task ChangeRepairStatus(RepairStatusModel status)
         {
-            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == status.RepairId);
             if (repair == null)
                 throw new Exception("Repair not found");
-            repair.Status = (byte)status;
+            repair.Status = status.Status;
             await _context.SaveChangesAsync();
         }
-        public async Task<RepairStatuses> GetRepairStatus(long repairId)
+        public async Task<byte> GetRepairStatus(long repairId)
         {
             var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
             if (repair == null)
                 throw new Exception("Repair not found");
-            return (RepairStatuses)repair.Status.Value;
+            return repair.Status.Value;
         }
         public async Task<RepairInfo> GetRepairReport(long repairId)
         {
@@ -112,7 +113,7 @@ namespace AntiTruble.Repairs.Core
             throw new System.NotImplementedException();
         }
 
-        public async Task RepairApplication(string clientFIO, string masterFIO, long masterId, RepairTypes repairType, DateTime startDate, DateTime endDate)
+        public async Task RepairApplication(RepairApplicationModel repairModel)
         {
             var personMksResultWithClient = JsonConvert.DeserializeObject<MksResponseResult>(
                await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
@@ -120,7 +121,7 @@ namespace AntiTruble.Repairs.Core
                        .AddHeader("Content-type", "application/json")
                        .AddJsonBody(new
                        {
-                           fio = clientFIO
+                           fio = repairModel.ClientFIO
                        })));
             if (!personMksResultWithClient.Success)
                 throw new Exception(personMksResultWithClient.Data);
@@ -130,7 +131,7 @@ namespace AntiTruble.Repairs.Core
                           .AddHeader("Content-type", "application/json")
                           .AddJsonBody(new
                           {
-                              fio = masterFIO
+                              fio = repairModel.MasterFIO
                           })));
             if (!personMksResultWithMaster.Success)
                 throw new Exception(personMksResultWithMaster.Data);
@@ -138,9 +139,9 @@ namespace AntiTruble.Repairs.Core
             var client = JsonConvert.DeserializeObject<Persons>(personMksResultWithClient.Data);
             var repair = new Models.Repairs
             {
-                StartDate = startDate,
-                EndDate = endDate,
-                RepairType = (byte)repairType,
+                StartDate = repairModel.StartDate,
+                EndDate = repairModel.EndDate,
+                RepairType = repairModel.RepairType,
                 Status = (byte)RepairStatuses.EquipmentInCenter,
                 Client = client.PersonId,
                 Master = master.PersonId

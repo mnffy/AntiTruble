@@ -129,3 +129,6 @@ AntiTruble.ClassLibrary/obj/AntiTruble.ClassLibrary.csproj.nuget.cache
 AntiTruble.ClassLibrary/bin/Debug/netcoreapp2.1/AntiTruble.ClassLibrary.pdb
 AntiTruble.ClassLibrary/bin/Debug/netcoreapp2.1/AntiTruble.ClassLibrary.dll
 AntiTruble.ClassLibrary/bin/Debug/netcoreapp2.1/AntiTruble.ClassLibrary.deps.json
+AntiTruble.Repairs/AntiTruble.Repairs.csproj.user
+AntiTruble.Person/AntiTruble.Person.csproj.user
+AntiTruble.Equipment/AntiTruble.Equipment.csproj.user

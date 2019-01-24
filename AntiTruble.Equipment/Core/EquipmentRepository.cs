@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AntiTruble.ClassLibrary;
 using AntiTruble.Equipment.DataModels;
 using AntiTruble.Equipment.Enums;
+using AntiTruble.Equipment.JsonModels;
 using AntiTruble.Equipment.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -19,7 +20,7 @@ namespace AntiTruble.Equipment.Core
         {
             _context = context;
         }
-        public async Task AddEquipment(string name, EquipmentTypes type, List<EquipmentDefects> defects, string fio)
+        public async Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, string fio)
         {
             var personMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                 await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
@@ -33,7 +34,7 @@ namespace AntiTruble.Equipment.Core
                 throw new Exception(personMksResult.Data);
             var equipment = new Equipments
             {
-                EquipmentType = (byte)type,
+                EquipmentType = type,
                 Name = name,
                 OwnerId = long.Parse(personMksResult.Data)
             };
