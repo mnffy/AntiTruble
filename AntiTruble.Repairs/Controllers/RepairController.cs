@@ -15,12 +15,12 @@ namespace AntiTruble.Repairs.Controllers
         {
             _repairsRepository = repairsRepository;
         }
-        [HttpPost("TryToPayOrder/{repairId}")]
-        public async Task<IActionResult> TryToPayOrder(long repairId)
+        [HttpPost("TryToPayOrder")]
+        public async Task<IActionResult> TryToPayOrder([FromBody]PayOrderModel model)
         {
             try
             {
-                var result = await _repairsRepository.TryToPayOrder(repairId);
+                var result = await _repairsRepository.TryToPayOrder(model.RepairId);
                 return Json(
                       new
                       {
@@ -34,6 +34,7 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
+
         [HttpGet("GetAllRepairs")]
         public async Task<IActionResult> GetAllRepairs()
         {

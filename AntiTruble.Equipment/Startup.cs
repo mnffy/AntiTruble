@@ -1,4 +1,5 @@
-﻿using AntiTruble.Equipment.Models;
+﻿using AntiTruble.Equipment.Core;
+using AntiTruble.Equipment.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace AntiTruble.Equipment
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<AntiTruble_EquipmentContext>(options => options
                 .UseSqlServer(Configuration.GetConnectionString("LocalDB")));
+            services.AddScoped<IEquipmentRepository, EquipmentRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

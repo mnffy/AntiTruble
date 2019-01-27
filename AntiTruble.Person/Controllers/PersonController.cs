@@ -2,6 +2,7 @@
 using AntiTruble.Person.Filters;
 using AntiTruble.Person.JsonModels;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -16,8 +17,8 @@ namespace AntiTruble.Person.Controllers
             _personsRepository = personsRepository;
         }
        
-        [HttpGet("GetPersonIdByFIO/{fio}")]
-        public async Task<IActionResult> GetPersonIdByFIO(string fio)
+        [HttpPost("GetPersonIdByFIO")]
+        public async Task<IActionResult> GetPersonIdByFIO([FromBody] PersonIdByFioModel model)
         {
             try
             {
@@ -25,7 +26,7 @@ namespace AntiTruble.Person.Controllers
                       new
                       {
                           Success = true,
-                          Data = await _personsRepository.GetPersonIdByFIO(fio)
+                          Data = await _personsRepository.GetPersonIdByFIO(model.Fio)
                       });
 
             }
@@ -35,8 +36,8 @@ namespace AntiTruble.Person.Controllers
             }
         }
 
-        [HttpGet("GetPersonById/{id}")]
-        public async Task<IActionResult> GetPersonById(long id)
+        [HttpPost("GetPersonById")]
+        public async Task<IActionResult> GetPersonById([FromBody]PersonByIdModel model)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace AntiTruble.Person.Controllers
                       new
                       {
                           Success = true,
-                          Data = await _personsRepository.GetPersonById(id)
+                          Data = JsonConvert.SerializeObject(await _personsRepository.GetPersonById(model.Id))
                       });
 
             }

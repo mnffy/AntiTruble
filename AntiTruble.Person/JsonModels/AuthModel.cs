@@ -1,8 +1,13 @@
-﻿namespace AntiTruble.Person.JsonModels
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+
+namespace AntiTruble.Person.JsonModels
 {
     public class AuthModel
     {
-        public string PhoneNumber { get; set; } 
+        [Required, JsonProperty("PhoneNumber")]
+        public string PhoneNumber { get; set; }
+        [Required, JsonProperty("Password")]
         public string Password { get; set; }
     }
 }

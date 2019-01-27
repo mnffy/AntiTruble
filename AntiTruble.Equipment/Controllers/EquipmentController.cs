@@ -4,6 +4,7 @@ using AntiTruble.Equipment.Core;
 using AntiTruble.Equipment.JsonModels;
 using AntiTruble.Person.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AntiTruble.Equipment.Controllers
 {
@@ -16,8 +17,8 @@ namespace AntiTruble.Equipment.Controllers
             _equipmentRepository = equipmentRepository;
         }
 
-        [HttpGet("SearchEquipment/{personId}")]
-        public async Task<IActionResult> SearchEquipment(long personId)
+        [HttpPost("SearchEquipment")]
+        public async Task<IActionResult> SearchEquipment([FromBody] SearchingModel model)
         {
             try
             {
@@ -25,7 +26,7 @@ namespace AntiTruble.Equipment.Controllers
                       new
                       {
                           Success = true,
-                          Data = await _equipmentRepository.SearchEquipments(personId)
+                          Data = JsonConvert.SerializeObject(await _equipmentRepository.SearchEquipments(model.PersonId))
                       });
 
             }
@@ -56,12 +57,12 @@ namespace AntiTruble.Equipment.Controllers
 
         }
 
-        [HttpPost("RemoveEquipment/{equipmentId}")]
-        public async Task<IActionResult> RemoveEquipment(long equipmentId)
+        [HttpPost("RemoveEquipment")]
+        public async Task<IActionResult> RemoveEquipment([FromBody]RemovingEquipmentModel model)
         {
             try
             {
-                await _equipmentRepository.RemoveEquipment(equipmentId);
+                await _equipmentRepository.RemoveEquipment(model.EquipmentId);
                 return Json(
                     new
                     {
