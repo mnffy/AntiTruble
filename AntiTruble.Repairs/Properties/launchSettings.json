@@ -11,14 +11,12 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "AntiTruble": {
       "commandName": "Project",
-      "launchBrowser": true,
       "applicationUrl": "http://localhost:50003/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
