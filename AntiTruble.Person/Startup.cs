@@ -1,7 +1,9 @@
 ﻿using AntiTruble.Person.Core;
 using AntiTruble.Person.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,13 +32,25 @@ namespace AntiTruble.Person
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<AntiTruble_PersonContext>(options => options
                .UseSqlServer(Configuration.GetConnectionString("LocalDB")));
+            // установка конфигурации подключения
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new PathString("/Person/Login");
+                });
             services.AddScoped<IPersonsRepository, PersonsRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            app.UseMvc();
+            app.UseAuthentication();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
