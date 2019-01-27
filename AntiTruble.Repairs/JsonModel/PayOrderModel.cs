@@ -3,11 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AntiTruble.Repairs.JsonModel
 {
-    public class RepairStatusModel
+    public class PayOrderModel
     {
         [Required, JsonProperty("RepairId")]
         public long RepairId { get; set; }
-        [Required, JsonProperty("Status")]
-        public byte Status { get; set; }
     }
 }

@@ -22,8 +22,7 @@ namespace AntiTruble.Person.Core
             var person = await _context.Persons.FirstOrDefaultAsync(p => p.PhoneNumber.Equals(phoneNumber));
             if (person == null)
                 throw new Exception("Person not found");
-            var encryptedPassword = SecurePasswordHasher.Encrypt(password);
-            return encryptedPassword.Equals(person.Password);
+            return SecurePasswordHasher.ValidatePassword(password, person.Password);
         }
 
         public async Task<long> GetPersonIdByFIO(string fio)
@@ -55,8 +54,8 @@ namespace AntiTruble.Person.Core
             var person = new Persons
             {
                 Fio = model.Fio,
-                Password = SecurePasswordHasher.Decrypt(model.Password),
-                Address = model.Password,
+                Password = SecurePasswordHasher.HashPassword(model.Password),
+                Address = model.Address,
                 Balance = model.Balance ?? default(decimal),
                 PhoneNumber = model.PhoneNumber,
                 Role = model.Role ?? (byte)PersonTypes.Client

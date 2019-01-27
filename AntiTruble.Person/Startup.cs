@@ -1,4 +1,5 @@
-﻿using AntiTruble.Person.Models;
+﻿using AntiTruble.Person.Core;
+using AntiTruble.Person.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace AntiTruble.Person
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<AntiTruble_PersonContext>(options => options
                .UseSqlServer(Configuration.GetConnectionString("LocalDB")));
+            services.AddScoped<IPersonsRepository, PersonsRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

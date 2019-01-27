@@ -1,4 +1,5 @@
-﻿using AntiTruble.Repairs.Models;
+﻿using AntiTruble.Repairs.Core;
+using AntiTruble.Repairs.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace AntiTruble
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<AntiTruble_RepairsContext>(options => options
                .UseSqlServer(Configuration.GetConnectionString("LocalDB")));
+            services.AddScoped<IRepairsRepository, RepairsRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

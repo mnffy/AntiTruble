@@ -24,7 +24,7 @@ namespace AntiTruble.Equipment.Core
         {
             var personMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                 await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
-                       new RestRequest("/GetPersonIdByFIO", Method.POST)
+                       new RestRequest("/GetPersonIdByFIO/", Method.POST)
                            .AddHeader("Content-type", "application/json")
                            .AddJsonBody(new
                            {
@@ -39,7 +39,8 @@ namespace AntiTruble.Equipment.Core
                 OwnerId = long.Parse(personMksResult.Data)
             };
             _context.Equipments.Add(equipment);
-            foreach(var defect in defects)
+            await _context.SaveChangesAsync();
+            foreach (var defect in defects)
             {
                 _context.EquipmentDefects.Add(new EquipmentDefects
                 {
@@ -58,7 +59,7 @@ namespace AntiTruble.Equipment.Core
                 _context.EquipmentDefects.RemoveRange(defects);
             var equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.EquipmentId == equipmentId);
             _context.Equipments.Remove(equipment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<EquipmentInfo>> SearchEquipments(long personId)
