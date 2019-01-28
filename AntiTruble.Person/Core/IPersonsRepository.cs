@@ -1,5 +1,4 @@
-﻿using AntiTruble.Person.Enums;
-using AntiTruble.Person.JsonModels;
+﻿using AntiTruble.Person.JsonModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

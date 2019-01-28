@@ -1,5 +1,5 @@
-﻿using AntiTruble.Person.Core;
-using AntiTruble.Person.Filters;
+﻿using AntiTruble.ClassLibrary.Filters;
+using AntiTruble.Person.Core;
 using AntiTruble.Person.JsonModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -46,7 +46,13 @@ namespace AntiTruble.Person.Controllers
             }
             return View(model);
         }
-      
+        [HttpGet]
+        public async Task<IActionResult> Logoff()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Person");
+        }
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -79,12 +85,6 @@ namespace AntiTruble.Person.Controllers
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             // установка аутентификационных куки
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
-
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account");
         }
 
         [HttpPost("GetPersonIdByFIO")]

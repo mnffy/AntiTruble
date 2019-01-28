@@ -5,12 +5,10 @@ namespace AntiTruble.Person.Controllers
 {
     public class HomeController : Controller
     {
-        [Authorize]
         public IActionResult Index()
         {
-            return Content(User.Identity.Name);
+            return View();
         }
-
 
         public IActionResult About()
         {

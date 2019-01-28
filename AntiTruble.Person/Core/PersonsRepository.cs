@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AntiTruble.Person.Enums;
+using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.Person.Extentions;
 using AntiTruble.Person.JsonModels;
 using AntiTruble.Person.Models;

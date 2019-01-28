@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AntiTruble.ClassLibrary;
-using AntiTruble.Equipment.DataModels;
-using AntiTruble.Equipment.Enums;
+using AntiTruble.ClassLibrary.Enums;
+using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Equipment.JsonModels;
 using AntiTruble.Equipment.Models;
 using Microsoft.EntityFrameworkCore;
@@ -76,7 +76,13 @@ namespace AntiTruble.Equipment.Core
                 };
                 var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
                 if (defects != null)
-                    equipmentInfo.Defects = await defects.ToListAsync();
+                    equipmentInfo.Defects = await defects.Select(x => new EquipmentDefectsModel
+                    {
+                        DefectId = x.DefectId,
+                        DefectName = x.DefectName,
+                        EquipmentId = x.EquipmentId,
+                        Price = x.Price
+                    }).ToListAsync();
                 result.Add(equipmentInfo);
             }
             if (!result.Any())

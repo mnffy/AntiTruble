@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AntiTruble.ClassLibrary.Filters;
 using AntiTruble.Equipment.Core;
 using AntiTruble.Equipment.JsonModels;
-using AntiTruble.Person.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

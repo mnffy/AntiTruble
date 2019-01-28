@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AntiTruble.ClassLibrary.Filters;
 using AntiTruble.Repairs.Core;
-using AntiTruble.Repairs.Filters;
 using AntiTruble.Repairs.JsonModel;
 using Microsoft.AspNetCore.Mvc;
 
