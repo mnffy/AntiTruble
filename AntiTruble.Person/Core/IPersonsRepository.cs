@@ -11,6 +11,8 @@ namespace AntiTruble.Person.Core
         Task<bool> Authorize(string phoneNumber, string password);
         Task<long> GetPersonIdByFIO(string fio);
         Task<long> GetPersonIdByPhoneNumber(string phoneNumber);
+
+        Task<PersonModel> GetPersonByPhoneNumber(string phoneNumber);
         Task<PersonModel> GetPersonById(long id);
         Task<IEnumerable<PersonModel>> GetPersons();
     }

@@ -32,6 +32,21 @@ namespace AntiTruble.Person.Core
                 throw new Exception("Person not found");
             return person.PersonId;
         }
+        public async Task<PersonModel> GetPersonByPhoneNumber(string phoneNumber)
+        {
+            var person = await _context.Persons.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phoneNumber));
+            if (person == null)
+                throw new Exception("Person not found");
+            return new PersonModel
+            {
+                Address = person.Address,
+                PhoneNumber = person.PhoneNumber,
+                Balance = person.Balance,
+                Fio = person.Fio,
+                Password = person.Password,
+                Role = person.Role
+            };
+        }
         public async Task<long> GetPersonIdByPhoneNumber(string phoneNumber)
         {
             var person = await _context.Persons.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phoneNumber));
