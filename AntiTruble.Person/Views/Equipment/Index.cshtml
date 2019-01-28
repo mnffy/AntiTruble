@@ -6,31 +6,56 @@
 @using AntiTruble.ClassLibrary.Models;
 @model IEnumerable<EquipmentInfo>
 
-<h2>Устройства в ремонте:</h2>
-<hr />
-<table class="table table-bordered table-responsive table-hover">
-    <tr>
-        <th>Номер оборудования</th>
-        <th>Название</th>
-        <th>Тип</th>
-        <th>Дефекты</th>
-    </tr>
-    @foreach (var equipment in Model)
-    {
+<div id="add-equipment">
+    <% Html.RenderPartial("AddEquipment"); %>
+</div>
+
+<div id="equipment-list">
+    <h2>Устройства в ремонте:</h2>
+    <hr />
+    <div style="float: right; margin-bottom:10px;">
+        <button style="width: 200px; height: 30px;" class="btn-default" id="addEquipment" onclick="onClickAddEquipment()">Добавить оборудование</button>
+    </div>
+    <table class="table table-bordered table-responsive table-hover">
         <tr>
-            <td>@equipment.EquipmentId</td>
-            <td>@equipment.Name</td>
-            <td>@equipment.EquipmentType.ToString()</td>
-            <td>
-                <ul>
-                    @foreach (var defect in equipment.Defects)
-                    {
-                        <li>
-                            @defect.DefectName  —  @defect.Price.Value.ToString() руб.
-                        </li>
-                    }
+            <th>Номер оборудования</th>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Дефекты</th>
+        </tr>
+        @foreach (var equipment in Model)
+        {
+            <tr>
+                <td>@equipment.EquipmentId</td>
+                <td>@equipment.Name</td>
+                <td>@equipment.EquipmentType.ToString()</td>
+                <td>
+                    <ul>
+                        @foreach (var defect in equipment.Defects)
+                        {
+                            <li>
+                                @defect.DefectName  —  @defect.Price.Value.ToString() руб.
+                            </li>
+                        }
                     </ul>
                 </td>
-        </tr>
+            </tr>
+        }
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+            $('#add-equipment').hide();
+            $('#equipment-list').show();
+        }
     }
-</table>
+
+    function onClickAddEquipment() {
+        $('#equipment-list').hide();
+        $('#add-equipment').show();
+    }
+
+</script>
