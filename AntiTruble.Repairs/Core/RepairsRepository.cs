@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AntiTruble.ClassLibrary;
-using AntiTruble.Equipment.DataModels;
-using AntiTruble.Person.Models;
-using AntiTruble.Repairs.DataModels;
-using AntiTruble.Repairs.Enums;
+using AntiTruble.ClassLibrary.DataModels;
+using AntiTruble.ClassLibrary.Enums;
+using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Repairs.JsonModel;
 using AntiTruble.Repairs.Models;
 using Microsoft.EntityFrameworkCore;
@@ -64,8 +63,8 @@ namespace AntiTruble.Repairs.Core
                           })));
             if (!personMksResultWithMaster.Success)
                 throw new Exception(personMksResultWithMaster.Data);
-            var master = JsonConvert.DeserializeObject<Persons>(personMksResultWithMaster.Data);
-            var client = JsonConvert.DeserializeObject<Persons>(personMksResultWithClient.Data);
+            var master = JsonConvert.DeserializeObject<PersonModel>(personMksResultWithMaster.Data);
+            var client = JsonConvert.DeserializeObject<PersonModel>(personMksResultWithClient.Data);
             var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                 await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
                      new RestRequest("/SearchEquipment", Method.POST)
@@ -85,8 +84,26 @@ namespace AntiTruble.Repairs.Core
             repairInfo.EndDate = repair.EndDate.Value;
             repairInfo.RepairId = repair.RepairId;
             repairInfo.RepairType = (RepairTypes)repair.RepairType.Value;
-            repairInfo.Master = master;
-            repairInfo.Client = client;
+            repairInfo.Master = new PersonModel
+            {
+                Address = master.Address,
+                Balance = master.Balance,
+                Fio = master.Fio,
+                Password = master.Password,
+                PersonId = master.PersonId,
+                PhoneNumber = master.PhoneNumber,
+                Role = master.Role
+            };
+            repairInfo.Client = new PersonModel
+            {
+                Address = client.Address,
+                Balance = client.Balance,
+                Fio = client.Fio,
+                Password = client.Password,
+                PersonId = client.PersonId,
+                PhoneNumber = client.PhoneNumber,
+                Role = client.Role
+            };
             repairInfo.Equipments = equipmentsInfo;
             repairInfo.Cost = cost;
             return repairInfo;

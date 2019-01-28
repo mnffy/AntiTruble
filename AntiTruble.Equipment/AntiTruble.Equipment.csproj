@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AntiTruble.ClassLibrary\AntiTruble.ClassLibrary.csproj" />
-    <ProjectReference Include="..\AntiTruble.Person\AntiTruble.Person.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AntiTruble.Person.Enums;
+using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.Person.Extentions;
 using AntiTruble.Person.JsonModels;
 using AntiTruble.Person.Models;
@@ -32,7 +32,13 @@ namespace AntiTruble.Person.Core
                 throw new Exception("Person not found");
             return person.PersonId;
         }
-
+        public async Task<long> GetPersonIdByPhoneNumber(string phoneNumber)
+        {
+            var person = await _context.Persons.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phoneNumber));
+            if (person == null)
+                throw new Exception("Person not found");
+            return person.PersonId;
+        }
         public async Task<PersonModel> GetPersonById(long id)
         {
             var person = await _context.Persons.FirstOrDefaultAsync(x => x.PersonId == id);

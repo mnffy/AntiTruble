@@ -40,10 +40,11 @@ namespace AntiTruble.Person
                 });
             services.AddScoped<IPersonsRepository, PersonsRepository>();
         }
-
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc(routes =>
             {

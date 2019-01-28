@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "Менеджер устройств";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using AntiTruble.ClassLibrary.Models;
+@model IEnumerable<EquipmentInfo>
+
+<h2>Устройства в ремонте:</h2>
+<hr />
+<table class="table table-bordered table-responsive table-hover">
+    <tr>
+        <th>Номер оборудования</th>
+        <th>Название</th>
+        <th>Тип</th>
+        <th>Дефекты</th>
+    </tr>
+    @foreach (var equipment in Model)
+    {
+        <tr>
+            <td>@equipment.EquipmentId</td>
+            <td>@equipment.Name</td>
+            <td>@equipment.EquipmentType.ToString()</td>
+            <td>
+                <ul>
+                    @foreach (var defect in equipment.Defects)
+                    {
+                        <li>
+                            @defect.DefectName  —  @defect.Price.Value.ToString() руб.
+                        </li>
+                    }
+                    </ul>
+                </td>
+        </tr>
+    }
+</table>
