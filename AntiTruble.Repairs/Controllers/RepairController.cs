@@ -4,6 +4,7 @@ using AntiTruble.ClassLibrary.Filters;
 using AntiTruble.Repairs.Core;
 using AntiTruble.Repairs.JsonModel;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AntiTruble.Repairs.Controllers
 {
@@ -39,12 +40,12 @@ namespace AntiTruble.Repairs.Controllers
         public async Task<IActionResult> GetAllRepairs()
         {
             try
-            {
+            { 
                 return Json(
                       new
                       {
                           Success = true,
-                          Data = await _repairsRepository.GetAllRepairs()
+                          Data = JsonConvert.SerializeObject(await _repairsRepository.GetAllRepairs())
                       });
 
             }

@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = "Менеджмент пользователей";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using AntiTruble.Person.JsonModels;
+@using AntiTruble.ClassLibrary.Enums;
+@model IEnumerable<PersonModel>
+
+<div id="user-list">
+    <h2>Пользователи системы:</h2>
+    <hr />
+    <div style="float: right; margin-bottom:10px;">
+        <button style="width: 200px; height: 30px;" class="btn-default" id="addUser" onclick="onClickAddUser()">Добавить пользователя</button>
+    </div>
+    <table class="table table-bordered table-responsive table-hover">
+        <tr>
+            <th>ФИО</th>
+            <th>Номер телефона</th>
+            <th>Адрес</th>
+            <th>Баланс</th>
+            <th>Роль</th>
+            <th>Действия</th>
+        </tr>
+        @foreach (var user in Model)
+        {
+        <tr>
+            <td>
+                <input class="text" type="text" style="width:170px;" id="fioTextBox"  value="@user.Fio" />
+            </td>
+            <td>
+                <input type="text" id="phoneNumberTextBox" value="@user.PhoneNumber" />
+            </td>
+            <td>
+                <input type="text" id="addressTextBox" value="@user.Address" />
+            </td>
+            <td>
+                <input type="text" id="balanceTextBox" min="0" step="1" value="@user.Balance" />
+            </td>
+            <td>
+                @{
+                    var listItems = new List<SelectListItem>();
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Администратор",
+                        Value = ((int)PersonTypes.Administator).ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Клиент",
+                        Value = ((int)PersonTypes.Client).ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Мастер",
+                        Value = ((int)PersonTypes.Master).ToString()
+                    });
+                    listItems.First(x => x.Value == user.Role.Value.ToString()).Selected = true;
+                }
+                @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDl", @class = "myclass" })
+            </td>
+            <td>
+                <button style="width: 75px; height: 25px;" class="btn-success" id="updateUser" onclick="onClickUpdateUser()">Обновить</button>
+                <button style="width: 75px; height: 25px;" class="btn-danger" id="deleteUser" onclick="onClickDeleteUser()">Удалить</button>
+            </td>
+        </tr>
+        }
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+           
+        }
+    }
+
+    function onClickAddUser() {
+        $('#user-list').hide();
+        $('#add-user').show();
+    }
+
+    function onClickUpdateUser() {
+        $('#user-list').hide();
+        $('#add-user').show();
+    }
+
+    function onClickDeleteUser() {
+        $('#user-list').hide();
+        $('#add-user').show();
+    }
+
+</script>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AntiTruble.ClassLibrary;
-using AntiTruble.ClassLibrary.DataModels;
 using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Repairs.JsonModel;

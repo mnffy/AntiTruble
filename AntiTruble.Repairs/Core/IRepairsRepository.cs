@@ -1,4 +1,4 @@
-﻿using AntiTruble.ClassLibrary.DataModels;
+﻿using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Repairs.JsonModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;

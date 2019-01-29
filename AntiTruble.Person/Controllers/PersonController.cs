@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
+using AntiTruble.Person.Models;
 
 namespace AntiTruble.Person.Controllers
 {
@@ -25,6 +27,13 @@ namespace AntiTruble.Person.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Users()
+        {
+            return View(await _personsRepository.GetPersons());
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

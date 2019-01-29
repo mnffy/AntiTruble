@@ -39,6 +39,7 @@ namespace AntiTruble.Person.Core
                 throw new Exception("Person not found");
             return new PersonModel
             {
+                PersonId = person.PersonId,
                 Address = person.Address,
                 PhoneNumber = person.PhoneNumber,
                 Balance = person.Balance,
@@ -61,6 +62,7 @@ namespace AntiTruble.Person.Core
                 throw new Exception("Person not found");
             return new PersonModel
             {
+                PersonId = person.PersonId,
                 Address = person.Address,
                 Balance = person.Balance,
                 Fio = person.Fio,
@@ -89,6 +91,7 @@ namespace AntiTruble.Person.Core
             await _context.Persons.Select(x =>
             new PersonModel
             {
+                PersonId = x.PersonId,
                 Role = x.Role,
                 Address = x.Address,
                 Balance = x.Balance,
