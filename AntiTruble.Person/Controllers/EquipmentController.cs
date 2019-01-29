@@ -39,9 +39,11 @@ namespace AntiTruble.Person.Controllers
                              {
                                  personId
                              })));
-                if (!equipmentMksResult.Success)
-                    throw new Exception(equipmentMksResult.Data);
+                //if (!equipmentMksResult.Success)
+                //    throw new Exception(equipmentMksResult.Data);
                 var equipments = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data);
+                if (equipments == null)
+                    equipments = new List<EquipmentInfo>();
                 return View(equipments);
             }
             catch (Exception exception)
@@ -63,6 +65,31 @@ namespace AntiTruble.Person.Controllers
                         new RestRequest("/CreateEquipment", Method.POST)
                              .AddHeader("Content-type", "application/json")
                              .AddJsonBody(JsonConvert.SerializeObject(person))));
+                if (!equipmentMksResult.Success)
+                    throw new Exception(equipmentMksResult.Data);
+                return RedirectToAction("Index", "Equipment");
+            }
+            catch (Exception exception)
+            {
+                ModelState.AddModelError(nameof(exception), exception.ToString());
+                throw;
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveEquipment(int equipmentId)
+        {
+            try
+            {
+                var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                    await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                        new RestRequest("/RemoveEquipment", Method.POST)
+                             .AddHeader("Content-type", "application/json")
+                             .AddJsonBody(new
+                             {
+                                 equipmentId
+                             })));
                 if (!equipmentMksResult.Success)
                     throw new Exception(equipmentMksResult.Data);
                 return RedirectToAction("Index", "Equipment");

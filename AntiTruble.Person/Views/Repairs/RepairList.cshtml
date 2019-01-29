@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Все заявки";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using AntiTruble.ClassLibrary.Models;
+@using AntiTruble.ClassLibrary.Enums;
+@model IEnumerable<RepairInfo>
+
+<div id="repair-list">
+    <h2>Заявки:</h2>
+    <hr />
+    <div style="float: right; margin-bottom:10px;">
+        <button style="width: 200px; height: 30px;" class="btn-default" id="addRepair" onclick="onClickAddRepair()">Создать заявку</button>
+    </div>
+    <table class="table table-bordered table-responsive table-hover">
+        <tr>
+            <th>Статус ремонта</th>
+            <th>Дата начала</th>
+            <th>Завершение</th>
+            <th>Мастер</th>
+            <th>Клиент</th>
+            <th>Тип ремонта</th>
+            <th>Стоимость</th>
+        </tr>
+        @foreach (var repair in Model)
+        {
+        <tr>
+            <td>
+                @{
+                    var listItems = new List<SelectListItem>();
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Заявка принята",
+                        Value = RepairStatuses.Confirm.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Устройство поступило в СЦ",
+                        Value = RepairStatuses.EquipmentInCenter.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Диагностика неисправности",
+                        Value = RepairStatuses.Diagnostic.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Устройство в процессе ремонта",
+                        Value = RepairStatuses.Repair.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Ожидается поставка комплектующих",
+                        Value = RepairStatuses.WaitingParts.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Устройство отремонтировано",
+                        Value = RepairStatuses.CompletedRepair.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Ожидает оплаты",
+                        Value = RepairStatuses.PayWaiting.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Возвращено клиенту",
+                        Value = RepairStatuses.BackToClient.ToString()
+                    });
+                    listItems.Add(new SelectListItem
+                    {
+                        Text = "Заявка отклонена",
+                        Value = RepairStatuses.Cancel.ToString()
+                    });
+                    listItems.First(x => x.Value == repair.Status.ToString()).Selected = true;
+                }
+                @Html.DropDownList("StatusDDL", listItems, null, new { @id = "statusDDL" })
+            </td>
+            <td>@repair.StartDate.Value.ToShortDateString()</td>
+            <td>@repair.EndDate.Value.ToShortDateString()</td>
+            <td>@repair.Master.Fio)</td>
+            <td>@repair.Client.Fio)</td>
+            <td>
+                @{
+                    var repairTypes = new List<SelectListItem>();
+                    repairTypes.Add(new SelectListItem
+                    {
+                        Text = "Первичный",
+                        Value = RepairTypes.FirstOfAll.ToString()
+                    });
+                    repairTypes.Add(new SelectListItem
+                    {
+                        Text = "По гарантии",
+                        Value = RepairTypes.Guarantee.ToString()
+                    });
+                    repairTypes.First(x => x.Value == repair.RepairType.ToString()).Selected = true;
+                }
+                @Html.DropDownList("RepairTypeDDL", repairTypes, null, new { @id = "repairTypeDDL" })
+
+            </td>
+            <td>
+                @repair.Cost
+            </td>
+        </tr>
+        }
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+            $('#add-equipment').hide();
+            $('#equipment-list').show();
+        }
+    }
+
+    function onClickAddRepair() {
+        $('#equipment-list').hide();
+        $('#add-equipment').show();
+    }
+
+</script>

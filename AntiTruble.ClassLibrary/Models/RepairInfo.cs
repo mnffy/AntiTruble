@@ -3,7 +3,7 @@ using AntiTruble.ClassLibrary.Models;
 using System;
 using System.Collections.Generic;
 
-namespace AntiTruble.ClassLibrary.DataModels
+namespace AntiTruble.ClassLibrary.Models
 {
     public class RepairInfo
     {

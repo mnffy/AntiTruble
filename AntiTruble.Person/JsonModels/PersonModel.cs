@@ -5,6 +5,8 @@ namespace AntiTruble.Person.JsonModels
 {
     public class PersonModel
     {
+        [Required, JsonProperty("PersonId")]
+        public long PersonId { get; set; }
         [Required, JsonProperty("Fio")]
         public string Fio { get; set; }
         [Required, JsonProperty("Password")]
