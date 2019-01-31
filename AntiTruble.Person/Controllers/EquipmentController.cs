@@ -54,6 +54,12 @@ namespace AntiTruble.Person.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult GetAddPartial()
+        {
+            return View("_AddEquipment", new EquipmentParamModel());
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateEquipment(EquipmentParamModel model)
         {
@@ -75,7 +81,6 @@ namespace AntiTruble.Person.Controllers
                 throw;
             }
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RemoveEquipment(int equipmentId)

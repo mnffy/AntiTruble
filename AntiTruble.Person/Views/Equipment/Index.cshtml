@@ -6,9 +6,7 @@
 @using AntiTruble.ClassLibrary.Models;
 @model IEnumerable<EquipmentInfo>
 
-<div id="add-equipment">
-    <% Html.RenderPartial("AddEquipment"); %>
-</div>
+<div id="add-equipment"></div>
 
 <div id="equipment-list">
     <h2>Устройства в ремонте:</h2>
@@ -46,16 +44,26 @@
 
 <script type="text/javascript">
 
-    document.onreadystatechange = function () {
-        if (document.readyState == "complete") {
-            $('#add-equipment').hide();
-            $('#equipment-list').show();
-        }
-    }
+    $(document).ready(function () {
+        $('#equipment-list').show();
+    });
 
     function onClickAddEquipment() {
         $('#equipment-list').hide();
-        $('#add-equipment').show();
+        
+          var urlPath = '@Url.Action("GetAddPartial", "Equipment")';
+          $.ajax({
+            type: "GET",
+            url: urlPath,
+            dataType: "html",
+              success: function (data) {
+                  debugger;
+                $("#add-equipment").html(data);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
     }
 
 </script>

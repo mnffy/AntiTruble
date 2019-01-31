@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
 using AntiTruble.Person.Models;
+using AntiTruble.Person.ControllerModels;
 
 namespace AntiTruble.Person.Controllers
 {
@@ -94,6 +95,46 @@ namespace AntiTruble.Person.Controllers
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             // установка аутентификационных куки
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(PersonParam model)
+        {
+            try
+            {
+                await _personsRepository.UpdateUserData(model);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "Ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string personId)
+        {
+            try
+            {
+                await _personsRepository.RemoveUser(long.Parse(personId));
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "Ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
         }
 
         [HttpPost("GetPersonIdByFIO")]

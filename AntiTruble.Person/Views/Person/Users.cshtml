@@ -26,6 +26,7 @@
         {
         <tr>
             <td>
+                <input class="text" type="text" hidden="hidden" style="width:170px;" id="idTextBox" value="@user.PersonId" />
                 <input class="text" type="text" style="width:170px;" id="fioTextBox"  value="@user.Fio" />
             </td>
             <td>
@@ -57,11 +58,11 @@
                     });
                     listItems.First(x => x.Value == user.Role.Value.ToString()).Selected = true;
                 }
-                @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDl", @class = "myclass" })
+                @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDL", @class = "myclass" })
             </td>
             <td>
-                <button style="width: 75px; height: 25px;" class="btn-success" id="updateUser" onclick="onClickUpdateUser()">Обновить</button>
-                <button style="width: 75px; height: 25px;" class="btn-danger" id="deleteUser" onclick="onClickDeleteUser()">Удалить</button>
+                <button style="width: 75px; height: 25px;" class="btn-success" id="updateUser" onclick="onClickUpdateUser(this.id)">Обновить</button>
+                <button style="width: 75px; height: 25px;" class="btn-danger" id="deleteUser" onclick="onClickDeleteUser(this.id)">Удалить</button>
             </td>
         </tr>
         }
@@ -69,26 +70,78 @@
 </div>
 
 <script type="text/javascript">
+    var UIelements = ["idTextBox", "fioTextBox", "phoneNumberTextBox", "addressTextBox", "balanceTextBox", "roleDDL", "updateUser", "deleteUser"];
 
-    document.onreadystatechange = function () {
-        if (document.readyState == "complete") {
-           
+    function getSecondPart(str) {
+        return str.split('_')[1];
+    }
+
+    $(document).ready(function () {
+        for (i = 0; i < UIelements.length; i++) {
+            var elementsById = document.querySelectorAll('[id=' + UIelements[i] + ']');
+            for (j = 0; j < elementsById.length; j++) {
+                var newID = UIelements[i] + "_" + j;
+                $(elementsById[j]).attr('id', newID);
+            }
+        }
+    });
+
+    function getRowData(rowId) {
+        return {
+            "PersonId": $("#idTextBox_" + rowId).val(),
+            "Fio": $("#fioTextBox_" + rowId).val(),
+            "PhoneNumber": $("#phoneNumberTextBox_" + rowId).val(),
+            "Address": $("#addressTextBox_" + rowId).val(),
+            "Balance": $("#balanceTextBox_" + rowId).val(),
+            "Role": $("#roleDDL_" + rowId).val(),
+            "Password": ""
         }
     }
 
-    function onClickAddUser() {
+    function onClickAddUser(e) {        
         $('#user-list').hide();
         $('#add-user').show();
     }
 
-    function onClickUpdateUser() {
-        $('#user-list').hide();
-        $('#add-user').show();
+    function onClickUpdateUser(longId) {
+        var rowId = getSecondPart(longId);
+        var rowData = getRowData(rowId);
+        var urlPath = '@Url.Action("UpdateUser", "Person")';
+          $.ajax({
+              type: "POST",
+              data: rowData,
+              dataType: "json",
+              url: urlPath,
+              success: function () {
+                  location.reload();
+                  alert("Пользователь обновлен");
+              },
+              error: function () {
+                  alert("error");
+              }
+            });
     }
 
-    function onClickDeleteUser() {
-        $('#user-list').hide();
-        $('#add-user').show();
+    function onClickDeleteUser(longId) {
+        var rowId = getSecondPart(longId);
+        var personId = getRowData(rowId).PersonId;
+        debugger;
+        var urlPath = '@Url.Action("DeleteUser", "Person")';
+        $.ajax({
+            type: "POST",
+            data: {
+                "personId": personId
+            },
+              dataType: "json",
+              url: urlPath,
+              success: function () {
+                  location.reload();
+                  alert("Пользователь удален");
+              },
+              error: function () {
+                  alert("error");
+              }
+            });
     }
 
 </script>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AntiTruble.ClassLibrary.Enums;
+using AntiTruble.Person.ControllerModels;
 using AntiTruble.Person.Extentions;
 using AntiTruble.Person.JsonModels;
 using AntiTruble.Person.Models;
@@ -84,6 +85,28 @@ namespace AntiTruble.Person.Core
                 Role = model.Role ?? (byte)PersonTypes.Client
             };
             _context.Persons.Add(person);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateUserData(PersonParam personModel)
+        {
+            var person = await _context.Persons.FirstOrDefaultAsync(x => x.PersonId == long.Parse(personModel.PersonId));
+            if (person == null)
+                throw new Exception("Person not found");
+            person.Fio = personModel.Fio;
+            person.Address = personModel.Address;
+            person.Balance = decimal.Parse(personModel.Balance);
+            person.PhoneNumber = personModel.PhoneNumber;
+            person.Role = byte.Parse(personModel.Role);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveUser(long personId)
+        {
+            var person = await _context.Persons.FirstOrDefaultAsync(x => x.PersonId == personId);
+            if (person == null)
+                throw new Exception("Person not found");
+            _context.Persons.Remove(person);
             await _context.SaveChangesAsync();
         }
 

@@ -5,9 +5,10 @@
 <h2>Добавление оборудования</h2>
 <form asp-action="CreateEquipment" asp-controller="Equipment" asp-anti-forgery="true">
     <div class="validation" asp-validation-summary="ModelOnly" />
-    <div>
-        <div>
-            <label asp-for="Name">Введите название устройства</label><br />
+    <div class="col-md-12">
+        <br />
+        <div class="row">
+            <label asp-for="Name">Название устройства</label><br />
             <input type="text" asp-for="Name" />
             <span asp-validation-for="Name" />
         </div>
@@ -15,16 +16,29 @@
             <input hidden="hidden" type="text" value="0" asp-for="Fio" />
             <span hidden="hidden" asp-validation-for="Fio" />
         </div>
-        <div>
-
+        <br />
+        <div class="row">
             @Html.DropDownList("TypeDDL",
                     new SelectList(Enum.GetValues(typeof(EquipmentTypes))),
                     "Тип устройства",
-                    new { @class = "form-control" })
+                    new { @id = "equipmentTypesDDL" })
             <span asp-validation-for="EquipmentType" />
         </div>
+        <br />
+        <div class="row">
+            <table class="table table-bordered table-responsive table-hover">
+                <tr>
+                    <th>Номер оборудования</th>
+                    <th>Название</th>
+                    <th>Тип</th>
+                    <th>Дефекты</th>
+                </tr>
+            </table>
+                <span asp-validation-for="EquipmentType" />
+        </div>
+        <br />
         <div>
-            <input type="submit" value="Добавить" />
+            <button style="width: 200px; height: 30px;" class="btn-success" id="addEquipment" onclick="onClickAdd()">Добавить</button>
         </div>
     </div>
 </form>
