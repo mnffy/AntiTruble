@@ -7,6 +7,8 @@
 @using AntiTruble.ClassLibrary.Enums;
 @model IEnumerable<PersonModel>
 
+<div id="add-user"></div>
+
 <div id="user-list">
     <h2>Пользователи системы:</h2>
     <hr />
@@ -24,51 +26,50 @@
         </tr>
         @foreach (var user in Model)
         {
-        <tr>
-            <td>
-                <input class="text" type="text" hidden="hidden" style="width:170px;" id="idTextBox" value="@user.PersonId" />
-                <input class="text" type="text" style="width:170px;" id="fioTextBox"  value="@user.Fio" />
-            </td>
-            <td>
-                <input type="text" id="phoneNumberTextBox" value="@user.PhoneNumber" />
-            </td>
-            <td>
-                <input type="text" id="addressTextBox" value="@user.Address" />
-            </td>
-            <td>
-                <input type="text" id="balanceTextBox" min="0" step="1" value="@user.Balance" />
-            </td>
-            <td>
-                @{
-                    var listItems = new List<SelectListItem>();
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Администратор",
-                        Value = ((int)PersonTypes.Administator).ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Клиент",
-                        Value = ((int)PersonTypes.Client).ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Мастер",
-                        Value = ((int)PersonTypes.Master).ToString()
-                    });
-                    listItems.First(x => x.Value == user.Role.Value.ToString()).Selected = true;
-                }
-                @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDL", @class = "myclass" })
-            </td>
-            <td>
-                <button style="width: 75px; height: 25px;" class="btn-success" id="updateUser" onclick="onClickUpdateUser(this.id)">Обновить</button>
-                <button style="width: 75px; height: 25px;" class="btn-danger" id="deleteUser" onclick="onClickDeleteUser(this.id)">Удалить</button>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    <input class="text" type="text" hidden="hidden" style="width:170px;" id="idTextBox" value="@user.PersonId" />
+                    <input class="text" type="text" style="width:170px;" id="fioTextBox" value="@user.Fio" />
+                </td>
+                <td>
+                    <input type="text" id="phoneNumberTextBox" value="@user.PhoneNumber" />
+                </td>
+                <td>
+                    <input type="text" id="addressTextBox" value="@user.Address" />
+                </td>
+                <td>
+                    <input type="text" id="balanceTextBox" min="0" step="1" value="@user.Balance" />
+                </td>
+                <td>
+                    @{
+                        var listItems = new List<SelectListItem>();
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Администратор",
+                            Value = ((int)PersonTypes.Administator).ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Клиент",
+                            Value = ((int)PersonTypes.Client).ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Мастер",
+                            Value = ((int)PersonTypes.Master).ToString()
+                        });
+                        listItems.First(x => x.Value == user.Role.Value.ToString()).Selected = true;
+                    }
+                    @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDL", @class = "myclass" })
+                </td>
+                <td>
+                    <button style="width: 75px; height: 25px;" class="btn-success" id="updateUser" onclick="onClickUpdateUser(this.id)">Обновить</button>
+                    <button style="width: 75px; height: 25px;" class="btn-danger" id="deleteUser" onclick="onClickDeleteUser(this.id)">Удалить</button>
+                </td>
+            </tr>
         }
     </table>
 </div>
-
 <script type="text/javascript">
     var UIelements = ["idTextBox", "fioTextBox", "phoneNumberTextBox", "addressTextBox", "balanceTextBox", "roleDDL", "updateUser", "deleteUser"];
 
@@ -98,10 +99,22 @@
         }
     }
 
-    function onClickAddUser(e) {        
-        $('#user-list').hide();
-        $('#add-user').show();
-    }
+        function onClickAddUser() {
+            debugger;
+            $('#user-list').hide();
+              var urlPath = '@Url.Action("AddUserView", "Person")';
+              $.ajax({
+                type: "GET",
+                url: urlPath,
+                dataType: "html",
+                  success: function (data) {
+                    $("#add-user").html(data);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+        }
 
     function onClickUpdateUser(longId) {
         var rowId = getSecondPart(longId);

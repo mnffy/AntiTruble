@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using AntiTruble.Person.Models;
 using AntiTruble.Person.ControllerModels;
+using AntiTruble.ClassLibrary.Enums;
 
 namespace AntiTruble.Person.Controllers
 {
@@ -34,7 +35,11 @@ namespace AntiTruble.Person.Controllers
         {
             return View(await _personsRepository.GetPersons());
         }
-
+        [HttpGet]
+        public IActionResult AddUserView()
+        {
+            return View("_AddUser");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -116,7 +121,29 @@ namespace AntiTruble.Person.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
-
+        [HttpPost]
+        public async Task<IActionResult> AddUser(PersonParam model)
+        {
+            try
+            {
+                Enum.TryParse(model.Role, out PersonTypes role);
+                await _personsRepository.Registration(new PersonModel
+                {
+                     Address = model.Address,
+                     Balance = decimal.Parse(model.Balance),
+                     Fio = model.Fio,
+                     Password = model.Password,
+                     PhoneNumber = model.PhoneNumber,
+                     Role = (byte)role,
+                     PersonId = long.Parse(model.PersonId)
+                });
+                return RedirectToAction("Users", "Person");
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string personId)
         {

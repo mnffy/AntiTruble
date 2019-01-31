@@ -18,4 +18,18 @@ namespace AntiTruble.ClassLibrary.Models
         public decimal? Price { get; set; }
         public long? EquipmentId { get; set; }
     }
+
+    public class EquipmentInfoParam
+    {
+        public string EquipmentId { get; set; }
+        public string Name { get; set; }
+        public string EquipmentType { get; set; }
+        public IEnumerable<EquipmentDefectsParam> Defects { get; set; }
+    }
+
+    public class EquipmentDefectsParam
+    {
+        public string DefectName { get; set; }
+        public string Price { get; set; }
+    }
 }
