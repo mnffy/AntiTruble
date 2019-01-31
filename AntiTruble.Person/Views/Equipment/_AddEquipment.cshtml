@@ -1,0 +1,107 @@
+﻿@using AntiTruble.Equipment.JsonModels
+@using AntiTruble.ClassLibrary.Enums
+@model EquipmentParamModel
+
+<h2>Добавление оборудования</h2>
+
+<div class="validation" asp-validation-summary="ModelOnly" />
+<div class="col-md-12">
+    <br />
+    <div class="row">
+        <label asp-for="Name">Название устройства</label><br />
+        <input id="equipmentNameTbx" type="text" asp-for="Name" />
+        <span asp-validation-for="Name" />
+    </div>
+    <br />
+    <div class="row">
+        @Html.DropDownList("TypeDDL",
+                new SelectList(Enum.GetValues(typeof(EquipmentTypes))),
+                "Тип устройства",
+                new { @id = "equipmentTypeDDL", @style = "width: 178px; height: 30px;" })
+        <span asp-validation-for="EquipmentType" />
+    </div>
+    <br />
+    <div class="row">
+        <table id="defectsTable" class="table table-bordered table-responsive table-hover">
+            <tr>
+                <th>Дефект</th>
+                <th>Стоимость</th>
+            </tr>
+            <tr>
+                <td> <input size="80" id="defectName" type="text" /></td>
+                <td> <input size="80" id="defectPrice" type="text" min="0" /></td>
+            </tr>
+        </table>
+        <div class="row" style="float: right; margin-bottom:10px;">
+            <button style="width: 40px; height: 40px;" class="btn-success" id="addrows">+</button>
+        </div>
+    </div>
+    <br />
+    <div class="row" style="float: left; margin-bottom:10px;">
+        <button class="btn-success" style="width: 200px; height: 30px;" id="addEquipment" onclick="onClickAddEquip()">Добавить</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    
+    $("#addrows").click(function () {
+        $("#defectsTable").each(function () {
+            var tds = '<tr>';
+            jQuery.each($('tr:last td', this), function () {
+                tds += '<td>' + $(this).html() + '</td>';
+            });
+            tds += '</tr>';
+            if ($('tbody', this).length > 0) {
+                $('tbody', this).append(tds);
+            } else {
+                $(this).append(tds);
+            }
+        });
+    });
+
+    function getSecondPart(str) {
+        return str.split('_')[1];
+    }
+
+    function getDefects() {
+        var result = [];
+        var names = document.querySelectorAll('[id=defectName]');
+        var prices = document.querySelectorAll('[id=defectPrice]');
+        for (j = 0; j < names.length; j++) {
+            result.push({
+                "DefectName": $(names[j].value.toString()).selector,
+                "Price": $(prices[j].value.toString()).selector
+            });
+        }
+        return result;
+    }
+    
+
+    function onClickAddEquip() {
+        debugger;
+        var eType = $("#equipmentTypeDDL").val();
+        var nameTbx = $("#equipmentNameTbx").val();
+        var defects = getDefects();
+        var urlPath = '@Url.Action("AddEquipment", "Equipment")';
+        $.ajax({
+            type: "POST",
+            data:
+            {
+                "EquipmentId": 0,
+                "Name": nameTbx,
+                "EquipmentType": eType,
+                "Defects": defects
+            },
+            url: urlPath,
+            success: function () {
+                window.location.href = '@Url.Action("Index", "Equipment")';
+                alert("Устройство добавлено на ремонт");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+
+</script>

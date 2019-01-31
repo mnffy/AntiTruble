@@ -1,4 +1,5 @@
 ﻿using AntiTruble.ClassLibrary;
+using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Equipment.JsonModels;
 using AntiTruble.Person.Core;
@@ -54,17 +55,42 @@ namespace AntiTruble.Person.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult GetAddPartial()
+        {
+            return View("_AddEquipment", new EquipmentParamModel());
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateEquipment(EquipmentParamModel model)
+        public async Task<IActionResult> AddEquipment(EquipmentInfoParam model)
         {
             try
             {
+                if (!Enum.TryParse(model.EquipmentType, out EquipmentTypes type))
+                    type = EquipmentTypes.OtherDevice;
+                var defects = new List<EquipmentInfoParamModel>();
+                foreach (var defect in model.Defects)
+                {
+                    defects.Add(new EquipmentInfoParamModel
+                    {
+                        DefectName = defect.DefectName,
+                        Price = decimal.Parse(defect.Price)
+                    });
+                }
+                var identity = (ClaimsIdentity)User.Identity;
+                _userPhoneNumber = identity.Claims.ToList()[0].Value;
                 var person = await _personsRepository.GetPersonByPhoneNumber(_userPhoneNumber);
                 var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
                         new RestRequest("/CreateEquipment", Method.POST)
                              .AddHeader("Content-type", "application/json")
-                             .AddJsonBody(JsonConvert.SerializeObject(person))));
+                             .AddJsonBody(JsonConvert.SerializeObject(new EquipmentParamModel
+                             {
+                                 Name = model.Name,
+                                 Fio = person.Fio,
+                                 EquipmentType = (byte)type,
+                                 Defects = defects
+                             }))));
                 if (!equipmentMksResult.Success)
                     throw new Exception(equipmentMksResult.Data);
                 return RedirectToAction("Index", "Equipment");
@@ -75,7 +101,6 @@ namespace AntiTruble.Person.Controllers
                 throw;
             }
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RemoveEquipment(int equipmentId)

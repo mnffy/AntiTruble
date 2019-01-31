@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
 using AntiTruble.Person.Models;
+using AntiTruble.Person.ControllerModels;
+using AntiTruble.ClassLibrary.Enums;
 
 namespace AntiTruble.Person.Controllers
 {
@@ -33,7 +35,11 @@ namespace AntiTruble.Person.Controllers
         {
             return View(await _personsRepository.GetPersons());
         }
-
+        [HttpGet]
+        public IActionResult AddUserView()
+        {
+            return View("_AddUser");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -94,6 +100,68 @@ namespace AntiTruble.Person.Controllers
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             // установка аутентификационных куки
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(PersonParam model)
+        {
+            try
+            {
+                await _personsRepository.UpdateUserData(model);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "Ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddUser(PersonParam model)
+        {
+            try
+            {
+                Enum.TryParse(model.Role, out PersonTypes role);
+                await _personsRepository.Registration(new PersonModel
+                {
+                     Address = model.Address,
+                     Balance = decimal.Parse(model.Balance),
+                     Fio = model.Fio,
+                     Password = model.Password,
+                     PhoneNumber = model.PhoneNumber,
+                     Role = (byte)role,
+                     PersonId = long.Parse(model.PersonId)
+                });
+                return RedirectToAction("Users", "Person");
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string personId)
+        {
+            try
+            {
+                await _personsRepository.RemoveUser(long.Parse(personId));
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "Ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
         }
 
         [HttpPost("GetPersonIdByFIO")]
