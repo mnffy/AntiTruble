@@ -10,21 +10,25 @@
             <input type="text" asp-for="Fio" />
             <span asp-validation-for="Fio" />
         </div>
+        <br />
         <div>
             <label asp-for="PhoneNumber">Введите номер телефона</label><br />
             <input type="text" asp-for="PhoneNumber" />
             <span asp-validation-for="PhoneNumber" />
         </div>
+        <br />
         <div>
             <label asp-for="Address">Введите адрес</label><br />
             <input type="text" asp-for="Address" />
             <span asp-validation-for="Address" />
         </div>
+        <br />
         <div>
             <label asp-for="Password">Введите пароль</label><br />
             <input asp-for="Password" />
             <span asp-validation-for="Password" />
         </div>
+        <br />
         <div>
             <input hidden="hidden" value="0" type="text" asp-for="PersonId" />
             <span hidden="hidden" asp-validation-for="PersonId" />
@@ -33,8 +37,9 @@
             <input hidden="hidden" value="0" type="text" asp-for="Balance" />
             <span hidden="hidden" asp-validation-for="Balance" />
         </div>
+        <br />
         <div>
-            <input type="submit" value="Регистрация" />
+            <input class="btn-success" style="width: 176px; height: 30px;" type="submit" value="Регистрация" />
         </div>
     </div>
 </form>

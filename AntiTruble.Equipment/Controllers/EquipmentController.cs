@@ -36,6 +36,24 @@ namespace AntiTruble.Equipment.Controllers
             }
         }
 
+        [HttpGet("GetAllEquipments")]
+        public async Task<IActionResult> GetAllEquipments()
+        {
+            try
+            {
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = JsonConvert.SerializeObject(await _equipmentRepository.GetAllEquipments())
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
 
         [HttpPost("CreateEquipment")]
         public async Task<IActionResult> CreateEquipment([FromBody]EquipmentParamModel model)

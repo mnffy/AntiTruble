@@ -8,12 +8,21 @@
 <div class="col-md-12">
     <br />
     <div class="row">
+        <label>Владелец устройства</label><br />
+        @Html.DropDownList("clientDDL",
+                new SelectList(ViewBag.Clients),
+                "Клиент",
+                new { @id = "clientDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row">
         <label asp-for="Name">Название устройства</label><br />
         <input id="equipmentNameTbx" type="text" asp-for="Name" />
         <span asp-validation-for="Name" />
     </div>
     <br />
     <div class="row">
+        <label>Тип устройства</label><br />
         @Html.DropDownList("TypeDDL",
                 new SelectList(Enum.GetValues(typeof(EquipmentTypes))),
                 "Тип устройства",
@@ -32,7 +41,7 @@
                 <td> <input size="80" id="defectPrice" type="text" min="0" /></td>
             </tr>
         </table>
-        <div class="row" style="float: right; margin-bottom:10px;">
+        <div style="float: right; margin-bottom:10px;">
             <button style="width: 40px; height: 40px;" class="btn-success" id="addrows">+</button>
         </div>
     </div>
@@ -81,7 +90,13 @@
         debugger;
         var eType = $("#equipmentTypeDDL").val();
         var nameTbx = $("#equipmentNameTbx").val();
+        var client = $("#clientDDL").val();
         var defects = getDefects();
+        if (client == "" || nameTbx == "" || eType == "" || defects.length < 1) {
+            alert("Указаны не все параметры");
+            return;
+        }
+        
         var urlPath = '@Url.Action("AddEquipment", "Equipment")';
         $.ajax({
             type: "POST",
@@ -90,7 +105,8 @@
                 "EquipmentId": 0,
                 "Name": nameTbx,
                 "EquipmentType": eType,
-                "Defects": defects
+                "Defects": defects,
+                "Owner" : client
             },
             url: urlPath,
             success: function () {

@@ -10,5 +10,6 @@ namespace AntiTruble.Equipment.Core
         Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, string fio);
         Task RemoveEquipment(long equipmentId);
         Task<IEnumerable<EquipmentInfo>> SearchEquipments(long personId);
+        Task<IEnumerable<EquipmentInfo>> GetAllEquipments();
     }
 }
