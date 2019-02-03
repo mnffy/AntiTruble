@@ -1,0 +1,37 @@
+﻿
+@using AntiTruble.ClassLibrary.Models;
+<h2>Создание заявки</h2>
+
+<div class="col-md-12">
+    <br />
+    <div class="row">
+        @Html.DropDownList("equipmentDDL",
+                new SelectList(ViewBag.Equipments),
+                "Устройство",
+                new { @id = "equipmentDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row">
+        @Html.DropDownList("clientDDL",
+                new SelectList(ViewBag.Clients),
+                "Клиент",
+                new { @id = "clientDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row">
+        @Html.DropDownList("masterDDL",
+                new SelectList(ViewBag.Masters),
+                "Мастер",
+                new { @id = "masterDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row" style="float: left; margin-bottom:10px;">
+        <button class="btn-success" style="width: 178px; height: 30px;" id="addRepair" onclick="onClickAddRepair()">Создать</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+   
+
+</script>

@@ -9,6 +9,7 @@ namespace AntiTruble.ClassLibrary.Models
         public string Name { get; set; }
         public EquipmentTypes EquipmentType { get; set; }
         public IEnumerable<EquipmentDefectsModel> Defects { get; set; }
+        public long? Owner { get; set; }
     }
 
     public class EquipmentDefectsModel
@@ -24,6 +25,7 @@ namespace AntiTruble.ClassLibrary.Models
         public string EquipmentId { get; set; }
         public string Name { get; set; }
         public string EquipmentType { get; set; }
+        public string Owner { get; set; }
         public IEnumerable<EquipmentDefectsParam> Defects { get; set; }
     }
 

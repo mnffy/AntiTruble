@@ -72,7 +72,37 @@ namespace AntiTruble.Equipment.Core
                 {
                     EquipmentId = equip.EquipmentId,
                     EquipmentType = (EquipmentTypes)equip.EquipmentType,
-                    Name = equip.Name
+                    Name = equip.Name,
+                    Owner = personId
+                };
+                var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
+                if (defects != null)
+                    equipmentInfo.Defects = await defects.Select(x => new EquipmentDefectsModel
+                    {
+                        DefectId = x.DefectId,
+                        DefectName = x.DefectName,
+                        EquipmentId = x.EquipmentId,
+                        Price = x.Price
+                    }).ToListAsync();
+                result.Add(equipmentInfo);
+            }
+            if (!result.Any())
+                throw new Exception("Equipments not found");
+            return result;
+        }
+
+        public async Task<IEnumerable<EquipmentInfo>> GetAllEquipments()
+        {
+            var result = new List<EquipmentInfo>();
+            var equips = _context.Equipments;
+            foreach (var equip in equips)
+            {
+                var equipmentInfo = new EquipmentInfo
+                {
+                    EquipmentId = equip.EquipmentId,
+                    EquipmentType = (EquipmentTypes)equip.EquipmentType,
+                    Name = equip.Name,
+                    Owner = equip.OwnerId
                 };
                 var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
                 if (defects != null)

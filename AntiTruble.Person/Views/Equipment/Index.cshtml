@@ -6,41 +6,62 @@
 @using AntiTruble.ClassLibrary.Models;
 @model IEnumerable<EquipmentInfo>
 
-<div id="add-equipment"></div>
-
-<div id="equipment-list">
-    <h2>Устройства в ремонте:</h2>
-    <hr />
-    <div style="float: right; margin-bottom:10px;">
-        <button style="width: 200px; height: 30px;" class="btn-default" id="addEquipment" onclick="onClickAddEquipment()">Добавить оборудование</button>
-    </div>
-    <table class="table table-bordered table-responsive table-hover">
-        <tr>
-            <th>Номер оборудования</th>
-            <th>Название</th>
-            <th>Тип</th>
-            <th>Дефекты</th>
-        </tr>
-        @foreach (var equipment in Model)
-        {
-            <tr>
-                <td>@equipment.EquipmentId</td>
-                <td>@equipment.Name</td>
-                <td>@equipment.EquipmentType.ToString()</td>
-                <td>
-                    <ul>
-                        @foreach (var defect in equipment.Defects)
-                        {
-                            <li>
-                                @defect.DefectName  —  @defect.Price.Value.ToString() руб.
-                            </li>
-                        }
-                    </ul>
-                </td>
-            </tr>
+<head>
+    <style>
+        #searchInput {
+            background-image: url('/images/search_icon.png');
+            background-size: auto;
+            background-position: 10px 12px; /* Position the search icon */
+            background-repeat: no-repeat; /* Do not repeat the icon image */
+            width: 100%; /* Full-width */
+            font-size: 16px; /* Increase font-size */
+            padding: 12px 20px 12px 40px; /* Add some padding */
+            border: 1px solid #ddd; /* Add a grey border */
+            margin-bottom: 22px; /* Add some space below the input */
         }
-    </table>
-</div>
+    </style>
+</head>
+<body>
+    <div id="add-equipment"></div>
+
+    <div id="equipment-list">
+        <h2>Устройства в ремонте:</h2>
+        <hr />
+        <div style="float: right; margin-bottom:10px;">
+            <button style="width: 200px; height: 30px;" class="btn-default" id="addEquipment" onclick="onClickAddEquipment()">Добавить оборудование</button>
+        </div>
+        <div >
+            <input type="text" id="searchInput"  onkeyup="onSearch()" placeholder="Поиск устройств...">
+        </div>
+        <table id="equipmentTable" class="table table-bordered table-responsive table-hover">
+            <tr>
+                <th>Номер оборудования</th>
+                <th>Название</th>
+                <th>Тип</th>
+                <th>Дефекты</th>
+            </tr>
+            @foreach (var equipment in Model)
+            {
+                <tr>
+                    <td>@equipment.EquipmentId</td>
+                    <td>@equipment.Name</td>
+                    <td>@equipment.EquipmentType.ToString()</td>
+                    <td>
+                        <ul>
+                            @foreach (var defect in equipment.Defects)
+                            {
+                                <li>
+                                    @defect.DefectName  —  @defect.Price.Value.ToString() руб.
+                                </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</body>
+
 
 <script type="text/javascript">
 
@@ -62,6 +83,25 @@
                     alert("error");
                 }
             });
+    }
+
+    function onSearch() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("equipmentTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
     }
 
 </script>

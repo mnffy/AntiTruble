@@ -56,8 +56,10 @@ namespace AntiTruble.Person.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAddPartial()
+        public async Task<IActionResult> GetAddPartial()
         {
+            var persons = await _personsRepository.GetPersons();
+            ViewBag.Clients = persons.Where(x => x.Role == (byte)PersonTypes.Client).Select(x => x.Fio);
             return View("_AddEquipment", new EquipmentParamModel());
         }
 
@@ -77,9 +79,6 @@ namespace AntiTruble.Person.Controllers
                         Price = decimal.Parse(defect.Price)
                     });
                 }
-                var identity = (ClaimsIdentity)User.Identity;
-                _userPhoneNumber = identity.Claims.ToList()[0].Value;
-                var person = await _personsRepository.GetPersonByPhoneNumber(_userPhoneNumber);
                 var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
                         new RestRequest("/CreateEquipment", Method.POST)
@@ -87,7 +86,7 @@ namespace AntiTruble.Person.Controllers
                              .AddJsonBody(JsonConvert.SerializeObject(new EquipmentParamModel
                              {
                                  Name = model.Name,
-                                 Fio = person.Fio,
+                                 Fio = model.Owner,
                                  EquipmentType = (byte)type,
                                  Defects = defects
                              }))));
