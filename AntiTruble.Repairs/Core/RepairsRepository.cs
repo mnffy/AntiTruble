@@ -124,6 +124,25 @@ namespace AntiTruble.Repairs.Core
             }
             return result;
         }
+
+        public async Task<IEnumerable<RepairInfo>> GetRepairsById(long clientId)
+        {
+            var repairIds = _context.Repairs.Where(x => x.Client == clientId).Select(x => x.RepairId);
+            var result = new List<RepairInfo>();
+            foreach (var repairId in repairIds)
+            {
+                try
+                {
+                    result.Add(await GetRepairReport(repairId));
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            return result;
+        }
+
         public async Task<bool> TryToPayOrder(long repairId)
         {
             throw new System.NotImplementedException();
@@ -156,7 +175,7 @@ namespace AntiTruble.Repairs.Core
                 StartDate = repairModel.StartDate,
                 EndDate = repairModel.EndDate,
                 RepairType = repairModel.RepairType,
-                Status = (byte)RepairStatuses.EquipmentInCenter,
+                Status = (byte)RepairStatuses.Confirm,
                 Client = long.Parse(personMksResultWithClient.Data),
                 Master = long.Parse(personMksResultWithMaster.Data)
             };

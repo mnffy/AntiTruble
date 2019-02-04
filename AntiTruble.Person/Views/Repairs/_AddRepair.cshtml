@@ -1,17 +1,64 @@
-﻿
-@using AntiTruble.ClassLibrary.Models;
+﻿@using AntiTruble.Equipment.JsonModels
+@using AntiTruble.ClassLibrary.Enums
 <h2>Создание заявки</h2>
 
 <div class="col-md-12">
     <br />
     <div class="row">
-        @Html.DropDownList("equipmentDDL",
-                new SelectList(ViewBag.Equipments),
-                "Устройство",
-                new { @id = "equipmentDDL", @style = "width: 178px; height: 30px;" })
+        <label>Название устройства</label>
+        <br />
+        <input id="equipmentNameTbx" type="text" />
     </div>
     <br />
     <div class="row">
+        <label>Тип устройства:</label><br />
+        @{
+            var equipTypesList = new List<SelectListItem>();
+            equipTypesList.Add(new SelectListItem
+            {
+                Text = "Компьютерная техника",
+                Value = ((int)EquipmentTypes.Computer).ToString()
+            });
+            equipTypesList.Add(new SelectListItem
+            {
+                Text = "Мобильное устройство",
+                Value = ((int)EquipmentTypes.MobileDevice).ToString()
+            });
+            equipTypesList.Add(new SelectListItem
+            {
+                Text = "Иной девайс",
+                Value = ((int)EquipmentTypes.OtherDevice).ToString()
+            });
+        }
+        @Html.DropDownList("EquipTypesDDL", equipTypesList, null, new { @id = "EquipTypesDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row">
+        <table id="defectsTable" class="table table-bordered table-responsive table-hover">
+            <tr>
+                <th>Дефект</th>
+                <th>Стоимость</th>
+            </tr>
+            <tr>
+                <td> <input size="80" id="defectName" type="text" /></td>
+                <td> <input size="80" id="defectPrice" type="text" min="0" /></td>
+            </tr>
+        </table>
+        <div style="float: right; margin-bottom:10px;">
+            <button style="width: 40px; height: 40px;" class="btn-success" id="addrows">+</button>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <label>Мастер:</label><br />
+        @Html.DropDownList("masterDDL",
+                new SelectList(ViewBag.Masters),
+                "Мастер",
+                new { @id = "masterDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row">
+        <label>Клиент:</label><br />
         @Html.DropDownList("clientDDL",
                 new SelectList(ViewBag.Clients),
                 "Клиент",
@@ -19,10 +66,27 @@
     </div>
     <br />
     <div class="row">
-        @Html.DropDownList("masterDDL",
-                new SelectList(ViewBag.Masters),
-                "Мастер",
-                new { @id = "masterDDL", @style = "width: 178px; height: 30px;" })
+        <label>Тип заявки:</label><br />
+        @{
+            var listItems = new List<SelectListItem>();
+            listItems.Add(new SelectListItem
+            {
+                Text = "Первичный ремонт",
+                Value = ((int)RepairTypes.FirstOfAll).ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "По гарантии",
+                Value = ((int)RepairTypes.Guarantee).ToString()
+            });
+        }
+        @Html.DropDownList("RepairTypesDDL", listItems, null, new { @id = "RepairTypesDDL", @style = "width: 178px; height: 30px;" })
+    </div>
+    <br />
+    <div class="row">
+        <label>Количество дней ремонта</label>
+        <br />
+        <input id="repairDays" type="text" />
     </div>
     <br />
     <div class="row" style="float: left; margin-bottom:10px;">
@@ -32,6 +96,69 @@
 
 <script type="text/javascript">
 
-   
+    $("#addrows").click(function () {
+        $("#defectsTable").each(function () {
+            var tds = '<tr>';
+            jQuery.each($('tr:last td', this), function () {
+                tds += '<td>' + $(this).html() + '</td>';
+            });
+            tds += '</tr>';
+            if ($('tbody', this).length > 0) {
+                $('tbody', this).append(tds);
+            } else {
+                $(this).append(tds);
+            }
+        });
+    });
+
+    function getDefects() {
+        var result = [];
+        var names = document.querySelectorAll('[id=defectName]');
+        var prices = document.querySelectorAll('[id=defectPrice]');
+        for (j = 0; j < names.length; j++) {
+            result.push({
+                "DefectName": $(names[j].value.toString()).selector,
+                "Price": $(prices[j].value.toString()).selector
+            });
+        }
+        return result;
+    }
+
+    function onClickAddRepair() {
+        var equipmentNameTbx = $("#equipmentNameTbx").val();
+        var equipType = $("#EquipTypesDDL").val();
+        var master = $("#masterDDL").val();
+        var client = $("#clientDDL").val();
+        var repairType = $("#RepairTypesDDL").val();
+        var defects = getDefects();
+        var repairDays = $("#repairDays").val();
+        if (equipmentNameTbx == "" || client == "" || equipType == "" || repairDays == ""
+            || master == "" || repairType == "" || defects.length < 1) {
+            alert("Указаны не все параметры");
+            return;
+        }
+        var urlPath = '@Url.Action("AddRepair", "Repairs")';
+        $.ajax({
+            type: "POST",
+            data:
+            {
+                "EquipmentName": equipmentNameTbx,
+                "EType": equipType,
+                "Master": master,
+                "Client": client,
+                "RType": repairType,
+                "Defects": defects,
+                "Days": repairDays
+            },
+            url: urlPath,
+            success: function () {
+                window.location.href = '@Url.Action("RepairList", "Repairs")';
+                alert("Заявка создана");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
 
 </script>

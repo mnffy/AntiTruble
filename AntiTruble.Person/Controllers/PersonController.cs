@@ -9,10 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Linq;
-using AntiTruble.Person.Models;
 using AntiTruble.Person.ControllerModels;
 using AntiTruble.ClassLibrary.Enums;
+using AntiTruble.ClassLibrary.Models;
+using PersonModel = AntiTruble.Person.JsonModels.PersonModel;
 
 namespace AntiTruble.Person.Controllers
 {

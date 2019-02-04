@@ -20,10 +20,11 @@
     </div>
     <br />
     <div class="row">
+        <label>Роль</label><br />
         @Html.DropDownList("RoleDDL",
                 new SelectList(Enum.GetValues(typeof(PersonTypes))),
                 "Роль в системе",
-                new { @id = "roleDDL" })
+                new { @id = "roleDDL", @style = "width: 178px; height: 30px;" })
         <span asp-validation-for="Role" />
     </div>
     <br />

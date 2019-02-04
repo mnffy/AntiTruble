@@ -11,6 +11,7 @@ namespace AntiTruble.Repairs.Core
         Task ChangeRepairStatus(RepairStatusModel status);
         Task<RepairInfo> GetRepairReport(long repairId);
         Task<IEnumerable<RepairInfo>> GetAllRepairs();
+        Task<IEnumerable<RepairInfo>> GetRepairsById(long clientId);
         Task<byte> GetRepairStatus(long personId);
         Task<bool> TryToPayOrder(long repairId);
     }
