@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AntiTruble.ClassLibrary.Filters;
+using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Repairs.Core;
 using AntiTruble.Repairs.JsonModel;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,26 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
+
+        [HttpGet("GetRepairsById")]
+        public async Task<IActionResult> GetRepairsById(long clientId)
+        {
+            try
+            {
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = JsonConvert.SerializeObject(await _repairsRepository.GetRepairsById(clientId))
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
         [HttpGet("GetRepairStatus/{personId}")]
         public async Task<IActionResult> GetRepairStatus(long personId)
         {

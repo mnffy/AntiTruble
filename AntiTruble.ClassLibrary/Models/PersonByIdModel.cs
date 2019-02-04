@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace AntiTruble.Person.JsonModels
+namespace AntiTruble.ClassLibrary.Models
 {
     public class PersonByIdModel
     {

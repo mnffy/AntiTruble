@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AntiTruble.Person.ControllerModels;
+using AntiTruble.ClassLibrary.Enums;
 
 namespace AntiTruble.Person.Core
 {
@@ -17,5 +18,6 @@ namespace AntiTruble.Person.Core
         Task<PersonModel> GetPersonByPhoneNumber(string phoneNumber);
         Task<PersonModel> GetPersonById(long id);
         Task<IEnumerable<PersonModel>> GetPersons();
+        Task<PersonTypes> GetRole(string phoneNumber);
     }
 }
