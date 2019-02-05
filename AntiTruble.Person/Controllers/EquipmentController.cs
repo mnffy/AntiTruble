@@ -19,10 +19,8 @@ namespace AntiTruble.Person.Controllers
     public class EquipmentController : Controller
     {
         private readonly IPersonsRepository _personsRepository;
-        private string _userPhoneNumber = string.Empty;
         public EquipmentController(IPersonsRepository personsRepository)
         {
-            _userPhoneNumber = string.Empty;
             _personsRepository = personsRepository;
         }
         public async Task<IActionResult> Index()
@@ -30,29 +28,33 @@ namespace AntiTruble.Person.Controllers
             try
             {
                 var identity = (ClaimsIdentity)User.Identity;
-                _userPhoneNumber = identity.Claims.ToList()[0].Value;
-                var personId = await _personsRepository.GetPersonIdByPhoneNumber(_userPhoneNumber);
-                var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
-                    await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
-                        new RestRequest("/SearchEquipment/", Method.POST)
-                             .AddHeader("Content-type", "application/json")
-                             .AddJsonBody(new
-                             {
-                                 personId
-                             })));
-                //if (!equipmentMksResult.Success)
-                //    throw new Exception(equipmentMksResult.Data);
-                var equipments = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data);
-                if (equipments == null)
-                    equipments = new List<EquipmentInfo>();
+                var _userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(_userPhoneNumber);
+                var equipments = new List<EquipmentInfo>();
+                if (person.Role == (byte)PersonTypes.Client)
+                {
+                    var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                        await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                           new RestRequest("/SearchEquipmentsByPerson", Method.POST)
+                                .AddHeader("Content-type", "application/json")
+                                .AddParameter(new Parameter("personId", person.PersonId, ParameterType.RequestBody))));
+                    equipments = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data).ToList();
+                }
+                else
+                {
+                    var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                           await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                              new RestRequest("/GetAllEquipments", Method.GET)
+                                   .AddHeader("Content-type", "application/json")
+                                   ));
+                    equipments = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data).ToList();
+                }
                 return View(equipments);
             }
-            catch (Exception exception)
+            catch
             {
                 return RedirectToAction("Index", "Home");
             }
-
-
         }
 
         [HttpGet]
@@ -86,7 +88,7 @@ namespace AntiTruble.Person.Controllers
                              .AddJsonBody(JsonConvert.SerializeObject(new EquipmentParamModel
                              {
                                  Name = model.Name,
-                                 Fio = model.Owner,
+                                 RepairId = long.Parse(model.RepairId),
                                  EquipmentType = (byte)type,
                                  Defects = defects
                              }))));

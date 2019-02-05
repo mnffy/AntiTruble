@@ -17,8 +17,8 @@ namespace AntiTruble.Equipment.Controllers
             _equipmentRepository = equipmentRepository;
         }
 
-        [HttpPost("SearchEquipment")]
-        public async Task<IActionResult> SearchEquipment([FromBody] SearchingModel model)
+        [HttpPost("SearchEquipmentsByPerson")]
+        public async Task<IActionResult> SearchEquipmentsByPerson([FromBody]long personId)
         {
             try
             {
@@ -26,7 +26,26 @@ namespace AntiTruble.Equipment.Controllers
                       new
                       {
                           Success = true,
-                          Data = JsonConvert.SerializeObject(await _equipmentRepository.SearchEquipments(model.PersonId))
+                          Data = JsonConvert.SerializeObject(await _equipmentRepository.SearchEquipmentsByPerson(personId))
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
+        [HttpPost("SearchEquipmentsByRepair")]
+        public async Task<IActionResult> SearchEquipmentsByRepair([FromBody]long repairId)
+        {
+            try
+            {
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = JsonConvert.SerializeObject(await _equipmentRepository.SearchEquipmentsByRepair(repairId))
                       });
 
             }
@@ -60,7 +79,7 @@ namespace AntiTruble.Equipment.Controllers
         {
             try
             {
-                await _equipmentRepository.AddEquipment(model.Name, model.EquipmentType, model.Defects, model.Fio);
+                await _equipmentRepository.AddEquipment(model.Name, model.EquipmentType, model.Defects, model.RepairId);
                 return Json(
                     new
                     {

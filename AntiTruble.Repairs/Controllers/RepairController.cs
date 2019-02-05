@@ -57,7 +57,7 @@ namespace AntiTruble.Repairs.Controllers
         }
 
         [HttpGet("GetRepairsById")]
-        public async Task<IActionResult> GetRepairsById(long clientId)
+        public async Task<IActionResult> GetRepairsById([FromBody]long clientId)
         {
             try
             {
@@ -137,12 +137,12 @@ namespace AntiTruble.Repairs.Controllers
         {
             try
             {
-                await _repairsRepository.RepairApplication(model);
+                var repairId = await _repairsRepository.RepairApplication(model);
                 return Json(
                       new
                       {
                           Success = true,
-                          Data = "ok"
+                          Data = repairId
                       });
 
             }
