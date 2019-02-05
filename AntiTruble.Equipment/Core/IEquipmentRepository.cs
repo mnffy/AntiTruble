@@ -7,9 +7,10 @@ namespace AntiTruble.Equipment.Core
 {
     public interface IEquipmentRepository
     {
-        Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, string fio);
+        Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, long repairId);
         Task RemoveEquipment(long equipmentId);
-        Task<IEnumerable<EquipmentInfo>> SearchEquipments(long personId);
+        Task<IEnumerable<EquipmentInfo>> SearchEquipmentsByRepair(long repairId);
+        Task<IEnumerable<EquipmentInfo>> SearchEquipmentsByPerson(long personId);
         Task<IEnumerable<EquipmentInfo>> GetAllEquipments();
     }
 }

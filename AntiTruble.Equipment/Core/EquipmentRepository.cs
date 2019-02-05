@@ -20,23 +20,13 @@ namespace AntiTruble.Equipment.Core
         {
             _context = context;
         }
-        public async Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, string fio)
+        public async Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, long repairId)
         {
-            var personMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
-                await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
-                       new RestRequest("/GetPersonIdByFIO/", Method.POST)
-                           .AddHeader("Content-type", "application/json")
-                           .AddJsonBody(new
-                           {
-                               fio
-                           })));
-            if (!personMksResult.Success)
-                throw new Exception(personMksResult.Data);
             var equipment = new Equipments
             {
                 EquipmentType = type,
                 Name = name,
-                OwnerId = long.Parse(personMksResult.Data)
+                RepairId = repairId
             };
             _context.Equipments.Add(equipment);
             await _context.SaveChangesAsync();
@@ -61,19 +51,18 @@ namespace AntiTruble.Equipment.Core
             _context.Equipments.Remove(equipment);
             await _context.SaveChangesAsync();
         }
-
-        public async Task<IEnumerable<EquipmentInfo>> SearchEquipments(long personId)
+        public async Task<IEnumerable<EquipmentInfo>> SearchEquipmentsByRepair(long repairId)
         {
             var result = new List<EquipmentInfo>();
-            var equips = _context.Equipments.Where(x => x.OwnerId == personId);
-            foreach(var equip in equips)
+            var equips = _context.Equipments.Where(x => x.RepairId == repairId);
+            foreach (var equip in equips)
             {
                 var equipmentInfo = new EquipmentInfo
                 {
                     EquipmentId = equip.EquipmentId,
                     EquipmentType = (EquipmentTypes)equip.EquipmentType,
                     Name = equip.Name,
-                    Owner = personId
+                    Repair = repairId
                 };
                 var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
                 if (defects != null)
@@ -89,6 +78,50 @@ namespace AntiTruble.Equipment.Core
             if (!result.Any())
                 throw new Exception("Equipments not found");
             return result;
+
+        }
+        public async Task<IEnumerable<EquipmentInfo>> SearchEquipmentsByPerson(long personId)
+        {
+            var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                      new RestRequest("/GetRepairsById", Method.GET)
+                          .AddHeader("Content-type", "application/json")
+                          .AddJsonBody(new
+                          {
+                              personId
+                          })));
+            if (!repairMksResult.Success)
+                throw new Exception(repairMksResult.Data);
+
+            var repairs = JsonConvert.DeserializeObject<IEnumerable<RepairInfo>>(repairMksResult.Data).ToList();
+            var result = new List<EquipmentInfo>();
+            foreach(var repair in repairs)
+            {
+                var equips = _context.Equipments.Where(x => x.RepairId == repair.RepairId);
+                foreach (var equip in equips)
+                {
+                    var equipmentInfo = new EquipmentInfo
+                    {
+                        EquipmentId = equip.EquipmentId,
+                        EquipmentType = (EquipmentTypes)equip.EquipmentType,
+                        Name = equip.Name,
+                        Repair = equip.RepairId
+                    };
+                    var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
+                    if (defects != null)
+                        equipmentInfo.Defects = await defects.Select(x => new EquipmentDefectsModel
+                        {
+                            DefectId = x.DefectId,
+                            DefectName = x.DefectName,
+                            EquipmentId = x.EquipmentId,
+                            Price = x.Price
+                        }).ToListAsync();
+                    result.Add(equipmentInfo);
+                }
+                if (!result.Any())
+                    throw new Exception("Equipments not found");
+            }
+            return result;
         }
 
         public async Task<IEnumerable<EquipmentInfo>> GetAllEquipments()
@@ -102,7 +135,7 @@ namespace AntiTruble.Equipment.Core
                     EquipmentId = equip.EquipmentId,
                     EquipmentType = (EquipmentTypes)equip.EquipmentType,
                     Name = equip.Name,
-                    Owner = equip.OwnerId
+                    Repair = equip.RepairId
                 };
                 var defects = _context.EquipmentDefects.Where(x => x.EquipmentId == equip.EquipmentId);
                 if (defects != null)

@@ -72,13 +72,27 @@ namespace AntiTruble.Person.Controllers
                     repairType = RepairTypes.FirstOfAll;
                 if (!int.TryParse(model.Days, out var repairDays))
                     repairDays = 30;
+                var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                  await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                      new RestRequest("/RepairApplication", Method.POST)
+                           .AddHeader("Content-type", "application/json")
+                           .AddJsonBody(JsonConvert.SerializeObject(new RepairApplicationModel
+                           {
+                               ClientFIO = model.Client,
+                               MasterFIO = model.Master,
+                               RepairType = (byte)repairType,
+                               StartDate = DateTime.UtcNow,
+                               EndDate = DateTime.UtcNow.AddDays(repairDays)
+                           }))));
+                if (!repairMksResult.Success)
+                    throw new Exception(repairMksResult.Data);
                 var defects = new List<EquipmentInfoParamModel>();
                 foreach (var defect in model.Defects)
                 {
                     defects.Add(new EquipmentInfoParamModel
                     {
                         DefectName = defect.DefectName,
-                        Price = decimal.Parse(defect.Price)
+                        Price = decimal.Parse(defect.Price),
                     });
                 }
                 var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
@@ -88,26 +102,13 @@ namespace AntiTruble.Person.Controllers
                              .AddJsonBody(JsonConvert.SerializeObject(new EquipmentParamModel
                              {
                                  Name = model.EquipmentName,
-                                 Fio = model.Client,
+                                 RepairId = long.Parse(repairMksResult.Data),
                                  EquipmentType = (byte)equipmentType,
                                  Defects = defects
                              }))));
                 if (!equipmentMksResult.Success)
                     throw new Exception(equipmentMksResult.Data);
-                var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
-                   await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
-                       new RestRequest("/RepairApplication", Method.POST)
-                            .AddHeader("Content-type", "application/json")
-                            .AddJsonBody(JsonConvert.SerializeObject(new RepairApplicationModel
-                            {
-                                ClientFIO = model.Client,
-                                MasterFIO = model.Master,
-                                RepairType = (byte)repairType,
-                                StartDate = DateTime.UtcNow,
-                                EndDate = DateTime.UtcNow.AddDays(repairDays)
-                            }))));
-                if (!repairMksResult.Success)
-                    throw new Exception(repairMksResult.Data);
+               
                 return RedirectToAction("Index", "Equipment");
             }
             catch (Exception exception)
@@ -160,7 +161,7 @@ namespace AntiTruble.Person.Controllers
                 {
                     var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                         await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
-                            new RestRequest("/GetAllRepairs", Method.GET)
+                            new RestRequest("/GetAllRepairs/", Method.GET)
                                 .AddHeader("Content-type", "application/json")));
                     repairs = JsonConvert.DeserializeObject<IEnumerable<RepairInfo>>(repairMksResult.Data).ToList();
                 }

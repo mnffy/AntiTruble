@@ -9,6 +9,6 @@ namespace AntiTruble.Equipment.Models
         public long EquipmentId { get; set; }
         public string Name { get; set; }
         public byte? EquipmentType { get; set; }
-        public long? OwnerId { get; set; }
+        public long? RepairId { get; set; }
     }
 }

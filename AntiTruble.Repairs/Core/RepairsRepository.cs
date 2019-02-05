@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AntiTruble.ClassLibrary;
 using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.ClassLibrary.Models;
+using AntiTruble.Equipment.JsonModels;
 using AntiTruble.Repairs.JsonModel;
 using AntiTruble.Repairs.Models;
 using Microsoft.EntityFrameworkCore;
@@ -66,12 +67,9 @@ namespace AntiTruble.Repairs.Core
             var client = JsonConvert.DeserializeObject<PersonModel>(personMksResultWithClient.Data);
             var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                 await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
-                     new RestRequest("/SearchEquipment", Method.POST)
+                     new RestRequest("/SearchEquipmentsByRepair", Method.POST)
                          .AddHeader("Content-type", "application/json")
-                         .AddJsonBody(new
-                         {
-                             personId = client.PersonId
-                         })));
+                         .AddParameter(new Parameter("repairId", repairId, ParameterType.RequestBody))));
             if (!equipmentMksResult.Success)
                 throw new Exception(equipmentMksResult.Data);
             var equipmentsInfo = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data);
@@ -148,7 +146,7 @@ namespace AntiTruble.Repairs.Core
             throw new System.NotImplementedException();
         }
 
-        public async Task RepairApplication(RepairApplicationModel repairModel)
+        public async Task<long> RepairApplication(RepairApplicationModel repairModel)
         {
             var personMksResultWithClient = JsonConvert.DeserializeObject<MksResponseResult>(
                await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
@@ -181,6 +179,7 @@ namespace AntiTruble.Repairs.Core
             };
             _context.Repairs.Add(repair);
             await _context.SaveChangesAsync();
+            return repair.RepairId;
         }
     }
 }

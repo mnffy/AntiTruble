@@ -7,7 +7,7 @@ namespace AntiTruble.Repairs.Core
 {
     public interface IRepairsRepository
     {
-        Task RepairApplication(RepairApplicationModel repair);
+        Task<long> RepairApplication(RepairApplicationModel repair);
         Task ChangeRepairStatus(RepairStatusModel status);
         Task<RepairInfo> GetRepairReport(long repairId);
         Task<IEnumerable<RepairInfo>> GetAllRepairs();
