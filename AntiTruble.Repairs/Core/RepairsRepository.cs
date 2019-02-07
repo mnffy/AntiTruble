@@ -109,7 +109,7 @@ namespace AntiTruble.Repairs.Core
         {
             var repairIds = _context.Repairs.Select(x => x.RepairId);
             var result = new List<RepairInfo>();
-            foreach(var repairId in repairIds)
+            foreach (var repairId in repairIds)
             {
                 try
                 {
@@ -143,7 +143,62 @@ namespace AntiTruble.Repairs.Core
 
         public async Task<bool> TryToPayOrder(long repairId)
         {
-            throw new System.NotImplementedException();
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            if (repair == null)
+                throw new Exception("Repair not found");
+
+            var personMksResult1 = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                      new RestRequest("/GetPersonById", Method.POST)
+                          .AddHeader("Content-type", "application/json")
+                          .AddJsonBody(new
+                          {
+                              id = repair.Client.Value
+                          })));
+            if (!personMksResult1.Success)
+                throw new Exception(personMksResult1.Data);
+            var person = JsonConvert.DeserializeObject<PersonModel>(personMksResult1.Data);
+            var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                    new RestRequest("/SearchEquipmentsByRepair", Method.POST)
+                        .AddHeader("Content-type", "application/json")
+                        .AddParameter(new Parameter("repairId", repairId, ParameterType.RequestBody))));
+            if (!equipmentMksResult.Success)
+                throw new Exception(equipmentMksResult.Data);
+            var equipmentsInfo = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data);
+            var cost = default(decimal);
+            foreach (var equip in equipmentsInfo)
+                cost += equip.Defects.Sum(x => x.Price.Value);
+            if (person.Balance < cost)
+                return false;
+            var personMksResult2 = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                      new RestRequest("/UpdateBalance", Method.POST)
+                          .AddHeader("Content-type", "application/json")
+                          .AddJsonBody(JsonConvert.SerializeObject(new BalanceModel
+                          {
+                              ClientId = person.PersonId,
+                              RepairCost = cost
+                          }))));
+            if (!personMksResult1.Success)
+                throw new Exception(personMksResult1.Data);
+
+            foreach (var equip in equipmentsInfo)
+            {
+               var equipmentMksResult2 = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                    new RestRequest("/RemoveEquipment", Method.POST)
+                        .AddHeader("Content-type", "application/json")
+                        .AddJsonBody(JsonConvert.SerializeObject(new RemovingEquipmentModel
+                        {
+                            EquipmentId = equip.EquipmentId
+                        }))));
+                if (!equipmentMksResult2.Success)
+                    throw new Exception(equipmentMksResult2.Data);
+            }
+            _context.Repairs.Remove(repair);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<long> RepairApplication(RepairApplicationModel repairModel)

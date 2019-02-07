@@ -57,7 +57,7 @@ namespace AntiTruble.Repairs.Controllers
         }
 
         [HttpGet("GetRepairsById")]
-        public async Task<IActionResult> GetRepairsById([FromBody]long clientId)
+        public async Task<IActionResult> GetRepairsById(long clientId)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
-        [HttpGet("GetRepairReport/{repairId}")]
+        [HttpGet("GetRepairReport")]
         public async Task<IActionResult> GetRepairReport(long repairId)
         {
             try
@@ -102,7 +102,7 @@ namespace AntiTruble.Repairs.Controllers
                       new
                       {
                           Success = true,
-                          Data = await _repairsRepository.GetRepairReport(repairId)
+                          Data = JsonConvert.SerializeObject(await _repairsRepository.GetRepairReport(repairId))
                       });
 
             }

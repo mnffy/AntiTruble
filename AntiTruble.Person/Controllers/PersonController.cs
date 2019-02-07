@@ -201,6 +201,27 @@ namespace AntiTruble.Person.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
+
+        [HttpPost("UpdateBalance")]
+        public async Task<IActionResult> UpdateBalance([FromBody]BalanceModel model)
+        {
+            try
+            {
+                await _personsRepository.UpdateBalance(model.ClientId, model.RepairCost);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "Ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
         [HttpGet("GetPersons")]
         public async Task<IActionResult> GetPersons()
         {

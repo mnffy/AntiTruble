@@ -138,7 +138,6 @@
     function onClickDeleteUser(longId) {
         var rowId = getSecondPart(longId);
         var personId = getRowData(rowId).PersonId;
-        debugger;
         var urlPath = '@Url.Action("DeleteUser", "Person")';
         $.ajax({
             type: "POST",

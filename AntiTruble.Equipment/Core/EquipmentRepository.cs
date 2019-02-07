@@ -86,10 +86,7 @@ namespace AntiTruble.Equipment.Core
                await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
                       new RestRequest("/GetRepairsById", Method.GET)
                           .AddHeader("Content-type", "application/json")
-                          .AddJsonBody(new
-                          {
-                              personId
-                          })));
+                          .AddParameter(new Parameter("clientId", personId, ParameterType.GetOrPost))));
             if (!repairMksResult.Success)
                 throw new Exception(repairMksResult.Data);
 

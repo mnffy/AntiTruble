@@ -1,0 +1,171 @@
+﻿
+@using AntiTruble.ClassLibrary.Models;
+@using AntiTruble.ClassLibrary.Enums;
+@model RepairInfo
+@{
+    ViewData["Title"] = "Все заявки";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="repair-report">
+    <h2>Отчет о ремонте:</h2>
+    <hr />
+    <div>
+        <div class="form-group">
+            <label>Клиент:</label><br />
+            @Model.Client.Fio<br />
+        </div>
+        <div class="form-group">
+            <label>Мастер:</label><br />
+            @Model.Master.Fio<br />
+        </div>
+        @{
+            var listItems = new List<SelectListItem>();
+            listItems.Add(new SelectListItem
+            {
+                Text = "Заявка принята",
+                Value = RepairStatuses.Confirm.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Устройство поступило в СЦ",
+                Value = RepairStatuses.EquipmentInCenter.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Диагностика неисправности",
+                Value = RepairStatuses.Diagnostic.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Устройство в процессе ремонта",
+                Value = RepairStatuses.Repair.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Ожидается поставка комплектующих",
+                Value = RepairStatuses.WaitingParts.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Устройство отремонтировано",
+                Value = RepairStatuses.CompletedRepair.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Ожидает оплаты",
+                Value = RepairStatuses.PayWaiting.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Возвращено клиенту",
+                Value = RepairStatuses.BackToClient.ToString()
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "Заявка отклонена",
+                Value = RepairStatuses.Cancel.ToString()
+            });
+            listItems.First(x => x.Value == Model.Status.ToString()).Selected = true;
+            var status = listItems.First(x => x.Value == Model.Status.ToString()).Text;
+        }
+        <div class="form-group">
+            <label>Статус ремнота:</label><br />
+            @status<br />
+        </div>
+        <div class="form-group">
+            <label>Дата начала ремонта:</label><br />
+            @Model.StartDate.Value.ToShortDateString()<br />
+        </div>
+        <div class="form-group">
+            <label>Завершение работы:</label><br />
+            @Model.EndDate.Value.ToShortDateString()<br />
+        </div>
+        @{
+            var repairTypes = new List<SelectListItem>();
+            repairTypes.Add(new SelectListItem
+            {
+                Text = "Первичный",
+                Value = RepairTypes.FirstOfAll.ToString()
+            });
+            repairTypes.Add(new SelectListItem
+            {
+                Text = "По гарантии",
+                Value = RepairTypes.Guarantee.ToString()
+            });
+            var repairType = repairTypes.First(x => x.Value == Model.RepairType.ToString()).Text;
+        }
+        <div class="form-group">
+            <label>Тип ремонта:</label><br />
+            @repairType<br />
+        </div>
+        <div class="form-group">
+            <label>Устройства:</label><br /><br />
+            <table id="equipmentTable" class="table">
+                <tr>
+                    <th>Номер оборудования</th>
+                    <th>Название</th>
+                    <th>Тип</th>
+                    <th>Дефекты</th>
+                </tr>
+                @foreach (var equipment in Model.Equipments)
+                {
+                    <tr>
+                        <td>@equipment.EquipmentId</td>
+                        <td>@equipment.Name</td>
+                        <td>@equipment.EquipmentType.ToString()</td>
+                        <td>
+                            <ul>
+                                @foreach (var defect in equipment.Defects)
+                                {
+                                    <li>
+                                        @defect.DefectName  —  @defect.Price.Value.ToString() руб.
+                                    </li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div><br /><br />
+        <div style="float: right;">
+            <label>Общая стоимость:</label><br />
+            @Model.Cost рублей<br />
+        </div>
+        <br /><br />
+        <div align="center" style="margin-left:30px;">
+            @if (Model.Status == RepairStatuses.PayWaiting)
+            {
+                <button class="btn-success" style="width: 178px; height: 30px;" id="payRepair" onclick="onClickPay(@Model.RepairId)">Оплатить</button>
+            }
+            else
+            {
+                <label>Оплата заказа запрещена, так как заказ не находится в статусе ожидания оплаты.</label>
+            }
+        </div>
+        <br /><br />
+    </div>
+</div>
+
+<script>
+    function onClickPay(id) {
+        var urlPath = '@Url.Action("PayRepair", "Repairs")';
+        $.ajax({
+            type: "POST",
+            url: urlPath,
+            data: { "repairId": id },
+                  dataType: "html",
+            success: function (data) {
+                if (data.data == "false") {
+                    alert("Недостаточно средств!");
+                }
+                else {
+                    alert("Оплата завершена!");
+                }
+                window.location.href = '@Url.Action("RepairList", "Repairs")';
+            },
+            error: function () {
+                        alert("error");
+                    }
+                });
+    }
+</script>

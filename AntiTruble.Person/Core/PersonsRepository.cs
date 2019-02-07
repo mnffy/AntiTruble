@@ -41,6 +41,15 @@ namespace AntiTruble.Person.Core
             return (PersonTypes)person.Role;
         }
 
+        public async Task UpdateBalance(long clientId, decimal cost)
+        {
+            var person = await _context.Persons.FirstOrDefaultAsync(x => x.PersonId == clientId);
+            if (person == null)
+                throw new Exception("Person not found");
+            person.Balance -= cost;
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<PersonModel> GetPersonByPhoneNumber(string phoneNumber)
         {
             var person = await _context.Persons.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phoneNumber));
