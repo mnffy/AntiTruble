@@ -61,6 +61,28 @@ namespace AntiTruble.Person.Controllers
             //ViewBag.Equipments = equipmentsNotInRepair.Select(x => x.Name);
             return View("_AddRepair");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> RepairDetails(string repairId)
+        {
+            var repairs = new List<RepairInfo>();
+            var identity = (ClaimsIdentity)User.Identity;
+            var userPhoneNumber = identity.Claims.ToList()[0].Value;
+            var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+            var result = new RepairInfo();
+            var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                   await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                       new RestRequest("/GetRepairReport", Method.GET)
+                            .AddHeader("Content-type", "application/json")
+                            .AddParameter(new Parameter("repairId", long.Parse(repairId), ParameterType.GetOrPost))));
+            if (!repairMksResult.Success)
+                throw new Exception(repairMksResult.Data);
+            else
+                result = JsonConvert.DeserializeObject<RepairInfo>(repairMksResult.Data);
+            ViewBag.Role = person.Role;
+            return View("_RepairDetails", result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddRepair(RepairParamModel model)
         {
@@ -149,6 +171,37 @@ namespace AntiTruble.Person.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> PayRepair(string repairId)
+        {
+            try
+            {
+                var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                    await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                        new RestRequest("/TryToPayOrder", Method.POST)
+                             .AddHeader("Content-type", "application/json")
+                             .AddJsonBody(JsonConvert.SerializeObject(new PayOrderModel
+                             {
+                                 RepairId = long.Parse(repairId),
+                             }))));
+                if (!repairMksResult.Success)
+                    throw new Exception(repairMksResult.Data);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          repairMksResult.Data
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
+
         public async Task<IActionResult> RepairList()
         {
             try
