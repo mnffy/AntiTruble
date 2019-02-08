@@ -13,9 +13,12 @@ using AntiTruble.Person.ControllerModels;
 using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.ClassLibrary.Models;
 using PersonModel = AntiTruble.Person.JsonModels.PersonModel;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AntiTruble.Person.Controllers
 {
+    [Authorize]
     [ValidateModel]
     public class PersonController : Controller
     {
@@ -33,6 +36,12 @@ namespace AntiTruble.Person.Controllers
         [HttpGet]
         public async Task<IActionResult> Users()
         {
+            var repairs = new List<RepairInfo>();
+            var identity = (ClaimsIdentity)User.Identity;
+            var userPhoneNumber = identity.Claims.ToList()[0].Value;
+            var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+            if (person.Role == (byte)PersonTypes.Client)
+                return RedirectToAction("Index", "Home");
             return View(await _personsRepository.GetPersons());
         }
         [HttpGet]

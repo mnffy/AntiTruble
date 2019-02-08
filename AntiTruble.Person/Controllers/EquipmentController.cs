@@ -56,15 +56,7 @@ namespace AntiTruble.Person.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAddPartial()
-        {
-            var persons = await _personsRepository.GetPersons();
-            ViewBag.Clients = persons.Where(x => x.Role == (byte)PersonTypes.Client).Select(x => x.Fio);
-            return View("_AddEquipment", new EquipmentParamModel());
-        }
-
+        
         [HttpPost]
         public async Task<IActionResult> AddEquipment(EquipmentInfoParam model)
         {

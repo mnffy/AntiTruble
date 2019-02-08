@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Все заявки";
+    ViewData["Title"] = "Отчет для руководства";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @using AntiTruble.ClassLibrary.Models;
@@ -7,31 +7,26 @@
 
 @model IEnumerable<RepairInfo>
 
-<div id="repair-report"></div>
-<div id="add-repair"></div>
 <div id="repair-list">
     <h2>Заявки:</h2>
     <hr />
-    <div style="float: right; margin-bottom:10px;">
-        <button style="width: 200px; height: 35px;" class="btn" id="addRepair" onclick="onClickAddRepair()">Создать заявку</button>
-    </div>
     <table class="table table-bordered table-responsive table-hover">
         <tr>
+            <th>№</th>
             <th>Статус ремонта</th>
             <th>Дата начала</th>
             <th>Завершение</th>
             <th>Мастер</th>
-            @if (ViewBag.Role != (byte)PersonTypes.Client)
-            {
-                <th>Клиент</th>
-            }
-
+            <th>Клиент</th>
             <th>Тип ремонта</th>
-            <th>Действия</th>
+            <th>Стоимость</th>
         </tr>
         @foreach (var repair in Model)
         {
             <tr>
+                <td>
+                    @repair.RepairId
+                </td>
                 <td>
                     @{
                         var listItems = new List<SelectListItem>();
@@ -84,23 +79,13 @@
                         var status = listItems.First(x => x.Value == repair.Status.ToString()).Text;
                     }
                     <input id="repairId" hidden="hidden" type="text" value="@repair.RepairId" />
-                    @if (ViewBag.Role == (byte)PersonTypes.Client)
-                    {
-                        @status
-                    }
-                    else
-                    {
-                        @Html.DropDownList("StatusDDL", listItems, null, new { @id = "statusDDL", @class = "form-control", @onchange = "OnChangeStatusDDL(this.value, this.id)" })
-                    }
+                    @status
 
                 </td>
                 <td>@repair.StartDate.Value.ToShortDateString()</td>
                 <td>@repair.EndDate.Value.ToShortDateString()</td>
                 <td>@repair.Master.Fio</td>
-                @if (ViewBag.Role != (byte)PersonTypes.Client)
-                {
-                    <td>@repair.Client.Fio</td>
-                }
+                <td>@repair.Client.Fio</td>
 
                 <td>
                     @{
@@ -120,90 +105,13 @@
                     @repairType
                 </td>
                 <td>
-                    @{
-                        var buttonName = "К оплате";
-                    }
-
-                    @if (ViewBag.Role == PersonTypes.Administator)
-                    {
-                        buttonName = "Отчет";
-                    }
-                    <button style="width: 150px; height: 30px;" class="btn" id="reportGenerate" onclick="onClickReportGenerate(this.id)">@buttonName</button>
+                    @repair.Cost руб.
                 </td>
             </tr>
         }
     </table>
-</div>
-
-<script type="text/javascript">
-
-    $(document).ready(function () {
-        var UIelements = ["statusDDL", "repairId", "reportGenerate", "bill"];
-        for (i = 0; i < UIelements.length; i++) {
-            var elementsById = document.querySelectorAll('[id=' + UIelements[i] + ']');
-            for (j = 0; j < elementsById.length; j++) {
-                var newID = UIelements[i] + "_" + j;
-                $(elementsById[j]).attr('id', newID);
-            }
-        }
-    });
-
-    function getSecondPart(str) {
-        return str.split('_')[1];
-    }
-
-    function onClickAddRepair() {
-            $('#repair-list').hide();
-              var urlPath = '@Url.Action("AddRepair", "Repairs")';
-              $.ajax({
-                type: "GET",
-                url: urlPath,
-                dataType: "html",
-                  success: function (data) {
-                      $("#add-repair").html(data);
-                    },
-                    error: function () {
-                        alert("error");
-                    }
-                });
-    }
-
-    function OnChangeStatusDDL(val, id) {
-        var repairId = $("#repairId_" + getSecondPart(id)).val();
-        var urlPath = '@Url.Action("ChangeRepairStatus", "Repairs")';
-        $.ajax({
-            type: "POST",
-            data:
-            {
-                "RepairId": repairId,
-                "Status": val
-            },
-            url: urlPath,
-            success: function () {
-                alert("Статус заявки обновлен");
-            },
-            error: function () {
-                alert("error");
-            }
-        });
-    }
-
-    function onClickReportGenerate(id) {
-        var repairId = $("#repairId_" + getSecondPart(id)).val();
-        $('#repair-list').hide();
-              var urlPath = '@Url.Action("RepairDetails", "Repairs")';
-        $.ajax({
-            type: "GET",
-            url: urlPath,
-            data: { "repairId": repairId },
-                  dataType: "html",
-                  success: function (data) {
-                      $("#repair-report").html(data);
-                    },
-                    error: function () {
-                        alert("error");
-                    }
-                });
-    }
-   
-</script>
+    <div>
+        <label>Итого:</label>
+        @ViewBag.TotalCost рублей
+    </div>
+    </div>
