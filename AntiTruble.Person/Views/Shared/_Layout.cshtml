@@ -4,7 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Сервисный центр "Антитрабл"</title>
-
+    <style type="text/css">
+        input[type=text] {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .mySuccess {
+            background-color: #4CAF50;
+            color: white;
+            padding: 2px 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top:5px;
+        }
+        .myDanger {
+            background-color: #DC143C;
+            color: white;
+            padding: 2px 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+    </style>
     <environment include="Development">
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -35,7 +59,7 @@
                     <li><a asp-area="" asp-controller="Equipment" asp-action="Index">Менеджмент устройств</a></li>
                     <li><a asp-area="" asp-controller="Person" asp-action="Users">Менеджмент пользователей</a></li>
                     <li><a asp-area="" asp-controller="Repairs" asp-action="RepairList">Заявки</a></li>
-                    <li><a asp-area="" asp-controller="Index" asp-action="Report">Отчет по заявкам</a></li>
+                    <li><a asp-area="" asp-controller="Report" asp-action="Index">Отчет по заявкам</a></li>
                     <li><a asp-area="" asp-controller="Person" asp-action="Register">Регистрация</a></li>
                     <li><a asp-area="" asp-controller="Person" asp-action="Login">Войти</a></li>
                     <li><a asp-area="" asp-controller="Person" asp-action="Logoff">Выйти</a></li>

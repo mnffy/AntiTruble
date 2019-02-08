@@ -7,7 +7,7 @@
     <div class="row">
         <label>Название устройства</label>
         <br />
-        <input id="equipmentNameTbx" type="text" />
+        <input style="height:33px;" id="equipmentNameTbx" type="text" />
     </div>
     <br />
     <div class="row">
@@ -30,7 +30,7 @@
                 Value = ((int)EquipmentTypes.OtherDevice).ToString()
             });
         }
-        @Html.DropDownList("EquipTypesDDL", equipTypesList, null, new { @id = "EquipTypesDDL", @style = "width: 178px; height: 30px;" })
+        @Html.DropDownList("EquipTypesDDL", equipTypesList, null, new { @id = "EquipTypesDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
     </div>
     <br />
     <div class="row">
@@ -40,8 +40,8 @@
                 <th>Стоимость</th>
             </tr>
             <tr>
-                <td> <input size="80" id="defectName" type="text" /></td>
-                <td> <input size="80" id="defectPrice" type="text" min="0" /></td>
+                <td> <input  style="height:33px;" size="80" id="defectName" type="text" /></td>
+                <td> <input  style="height:33px;" size="80" id="defectPrice" type="text" min="0" /></td>
             </tr>
         </table>
         <div style="float: right; margin-bottom:10px;">
@@ -54,7 +54,7 @@
         @Html.DropDownList("masterDDL",
                 new SelectList(ViewBag.Masters),
                 "Мастер",
-                new { @id = "masterDDL", @style = "width: 178px; height: 30px;" })
+                new { @id = "masterDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
     </div>
     <br />
     <div class="row">
@@ -62,7 +62,7 @@
         @Html.DropDownList("clientDDL",
                 new SelectList(ViewBag.Clients),
                 "Клиент",
-                new { @id = "clientDDL", @style = "width: 178px; height: 30px;" })
+                new { @id = "clientDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
     </div>
     <br />
     <div class="row">
@@ -80,18 +80,19 @@
                 Value = ((int)RepairTypes.Guarantee).ToString()
             });
         }
-        @Html.DropDownList("RepairTypesDDL", listItems, null, new { @id = "RepairTypesDDL", @style = "width: 178px; height: 30px;" })
+        @Html.DropDownList("RepairTypesDDL", listItems, null, new { @id = "RepairTypesDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
     </div>
     <br />
     <div class="row">
         <label>Количество дней ремонта</label>
         <br />
-        <input id="repairDays" type="text" />
+        <input  style="height:33px;" id="repairDays" type="text" />
     </div>
     <br />
-    <div class="row" style="float: left; margin-bottom:10px;">
-        <button class="btn-success" style="width: 178px; height: 30px;" id="addRepair" onclick="onClickAddRepair()">Создать</button>
-    </div>
+    <center>
+        <button class="mySuccess" style="width: 178px; height: 30px;" id="addRepair" onclick="onClickAddRepair()">Создать</button>
+    </center>
+        
 </div>
 
 <script type="text/javascript">

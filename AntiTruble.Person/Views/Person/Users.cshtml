@@ -13,7 +13,7 @@
     <h2>Пользователи системы:</h2>
     <hr />
     <div style="float: right; margin-bottom:10px;">
-        <button style="width: 200px; height: 30px;" class="btn-default" id="addUser" onclick="onClickAddUser()">Добавить пользователя</button>
+        <button style="width: 200px; height: 35px;" class="btn" id="addUser" onclick="onClickAddUser()">Добавить пользователя</button>
     </div>
     <table class="table table-bordered table-responsive table-hover">
         <tr>
@@ -29,16 +29,16 @@
             <tr>
                 <td>
                     <input class="text" type="text" hidden="hidden" style="width:170px;" id="idTextBox" value="@user.PersonId" />
-                    <input class="text" type="text" style="width:170px;" id="fioTextBox" value="@user.Fio" />
+                    <input class="text"  type="text" style="width:170px;height:33px;" id="fioTextBox" value="@user.Fio" />
                 </td>
                 <td>
-                    <input type="text" id="phoneNumberTextBox" value="@user.PhoneNumber" />
+                    <input type="text" style="height:33px;" id="phoneNumberTextBox" value="@user.PhoneNumber" />
                 </td>
                 <td>
-                    <input type="text" id="addressTextBox" value="@user.Address" />
+                    <input type="text" style="height:33px;" id="addressTextBox" value="@user.Address" />
                 </td>
                 <td>
-                    <input type="text" id="balanceTextBox" min="0" step="1" value="@user.Balance" />
+                    <input type="text" style="height:33px;" id="balanceTextBox" min="0" step="1" value="@user.Balance" />
                 </td>
                 <td>
                     @{
@@ -60,11 +60,11 @@
                         });
                         listItems.First(x => x.Value == user.Role.Value.ToString()).Selected = true;
                     }
-                    @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDL", @class = "myclass" })
+                    @Html.DropDownList("DDL", listItems, null, new { @id = "roleDDL", @class = "form-control" })
                 </td>
                 <td>
-                    <button style="width: 75px; height: 25px;" class="btn-success" id="updateUser" onclick="onClickUpdateUser(this.id)">Обновить</button>
-                    <button style="width: 75px; height: 25px;" class="btn-danger" id="deleteUser" onclick="onClickDeleteUser(this.id)">Удалить</button>
+                    <button style="width: 75px; height: 25px;" class="mySuccess" id="updateUser" onclick="onClickUpdateUser(this.id)">Обновить</button>
+                    <button style="width: 75px; height: 25px;" class="myDanger" id="deleteUser" onclick="onClickDeleteUser(this.id)">Удалить</button>
                 </td>
             </tr>
         }
