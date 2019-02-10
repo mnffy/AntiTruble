@@ -20,6 +20,7 @@ namespace AntiTruble.ClassLibrary.Enums
 	    //Возвращено клиенту.
         BackToClient = 7,
         //Заявка отклонена
-        Cancel = 8
+        Cancel = 8,
+        Paid = 9
     }
 }

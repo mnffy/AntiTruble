@@ -94,7 +94,25 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
-        
+        [HttpGet("RemoveRepair")]
+        public async Task<IActionResult> RemoveRepair(long repairId)
+        {
+            try
+            {
+                await _repairsRepository.RemoveRepair(repairId);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
         [HttpPost("ChangeRepairStatus")]
         public async Task<IActionResult> ChangeRepairStatus([FromBody]RepairStatusModel model)
         {

@@ -14,5 +14,6 @@ namespace AntiTruble.Repairs.Core
         Task<IEnumerable<RepairInfo>> GetRepairsById(long clientId);
         Task<byte> GetRepairStatus(long personId);
         Task<bool> TryToPayOrder(long repairId);
+        Task RemoveRepair(long repairId);
     }
 }
