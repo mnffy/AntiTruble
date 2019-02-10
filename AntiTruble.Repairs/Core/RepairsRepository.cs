@@ -182,25 +182,39 @@ namespace AntiTruble.Repairs.Core
                           }))));
             if (!personMksResult1.Success)
                 throw new Exception(personMksResult1.Data);
-
+            repair.Status = (byte)RepairStatuses.Paid;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task RemoveRepair(long repairId)
+        {
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            if (repair == null)
+                throw new Exception("Repair not found");
+            var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+               await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                    new RestRequest("/SearchEquipmentsByRepair", Method.POST)
+                        .AddHeader("Content-type", "application/json")
+                        .AddParameter(new Parameter("repairId", repairId, ParameterType.RequestBody))));
+            if (!equipmentMksResult.Success)
+                throw new Exception(equipmentMksResult.Data);
+            var equipmentsInfo = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data);
             foreach (var equip in equipmentsInfo)
             {
-               var equipmentMksResult2 = JsonConvert.DeserializeObject<MksResponseResult>(
-               await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
-                    new RestRequest("/RemoveEquipment", Method.POST)
-                        .AddHeader("Content-type", "application/json")
-                        .AddJsonBody(JsonConvert.SerializeObject(new RemovingEquipmentModel
-                        {
-                            EquipmentId = equip.EquipmentId
-                        }))));
+                var equipmentMksResult2 = JsonConvert.DeserializeObject<MksResponseResult>(
+                await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
+                     new RestRequest("/RemoveEquipment", Method.POST)
+                         .AddHeader("Content-type", "application/json")
+                         .AddJsonBody(JsonConvert.SerializeObject(new RemovingEquipmentModel
+                         {
+                             EquipmentId = equip.EquipmentId
+                         }))));
                 if (!equipmentMksResult2.Success)
                     throw new Exception(equipmentMksResult2.Data);
             }
             _context.Repairs.Remove(repair);
             await _context.SaveChangesAsync();
-            return true;
         }
-
         public async Task<long> RepairApplication(RepairApplicationModel repairModel)
         {
             var personMksResultWithClient = JsonConvert.DeserializeObject<MksResponseResult>(

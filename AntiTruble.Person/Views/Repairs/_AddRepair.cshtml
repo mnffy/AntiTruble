@@ -49,6 +49,10 @@
         </div>
     </div>
     <br />
+    @if (ViewBag.Role = PersonTypes.Client)
+    {
+
+    }
     <div class="row">
         <label>Мастер:</label><br />
         @Html.DropDownList("masterDDL",

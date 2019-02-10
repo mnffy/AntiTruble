@@ -129,6 +129,17 @@ namespace AntiTruble.Person.Controllers
                 ViewBag.Role = await InitRole();
                 if (!Enum.TryParse(model.Status, out RepairStatuses repairStatus))
                     throw new Exception("Parsing error");
+                if (repairStatus == RepairStatuses.Cancel)
+                {
+                    var repairMksResult2 = JsonConvert.DeserializeObject<MksResponseResult>(
+                       await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                           new RestRequest("/RemoveRepair", Method.GET)
+                                .AddHeader("Content-type", "application/json")
+                                .AddParameter(new Parameter("repairId", long.Parse(model.RepairId), ParameterType.GetOrPost))));
+                    if (!repairMksResult2.Success)
+                        throw new Exception(repairMksResult2.Data);
+                }
+
                 var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
                         new RestRequest("/ChangeRepairStatus", Method.POST)
