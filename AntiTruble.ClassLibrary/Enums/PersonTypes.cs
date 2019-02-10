@@ -4,6 +4,7 @@
     {
         Client = 0,
         Master = 1,
-        Administator = 2
+        Administator = 2,
+        None = 3
     }
 }

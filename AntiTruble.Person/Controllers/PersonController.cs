@@ -14,11 +14,9 @@ using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.ClassLibrary.Models;
 using PersonModel = AntiTruble.Person.JsonModels.PersonModel;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace AntiTruble.Person.Controllers
 {
-    [Authorize]
     [ValidateModel]
     public class PersonController : Controller
     {
@@ -30,23 +28,41 @@ namespace AntiTruble.Person.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            ViewBag.Role = PersonTypes.None;
             return View();
+        }
+        private async Task<PersonTypes> InitRole()
+        {
+            var identity = (ClaimsIdentity)User.Identity;
+            if (identity.Claims.Any())
+            {
+                var userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+                return (PersonTypes)person.Role;
+            }
+            return PersonTypes.None;
         }
 
         [HttpGet]
         public async Task<IActionResult> Users()
         {
-            var repairs = new List<RepairInfo>();
-            var identity = (ClaimsIdentity)User.Identity;
-            var userPhoneNumber = identity.Claims.ToList()[0].Value;
-            var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
-            if (person.Role == (byte)PersonTypes.Client)
+            var role = await InitRole();
+            ViewBag.Role = role;
+            if (role == PersonTypes.None)
+                return RedirectToAction("Login", "Person");
+            if (role == PersonTypes.Client)
                 return RedirectToAction("Index", "Home");
             return View(await _personsRepository.GetPersons());
         }
         [HttpGet]
-        public IActionResult AddUserView()
+        public async Task<IActionResult> AddUserView()
         {
+            var role = await InitRole();
+            ViewBag.Role = role;
+            if (role == PersonTypes.None)
+                return RedirectToAction("Login", "Person");
+            if (role == PersonTypes.Client)
+                return RedirectToAction("Index", "Home");
             return View("_AddUser");
         }
 
@@ -59,9 +75,12 @@ namespace AntiTruble.Person.Controllers
                 var authResult = await _personsRepository.Authorize(model.PhoneNumber, model.Password);
                 if (authResult)
                 {
+                   
                     await Authenticate(model.PhoneNumber); // аутентификация
+                    ViewBag.Role = await InitRole();
                     return RedirectToAction("Index", "Home");
                 }
+                ViewBag.Role = PersonTypes.None;
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
             catch (Exception exception)
@@ -74,12 +93,14 @@ namespace AntiTruble.Person.Controllers
         public async Task<IActionResult> Logoff()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            ViewBag.Role = await InitRole();
             return RedirectToAction("Login", "Person");
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            ViewBag.Role = await InitRole();
             return View();
         }
         [HttpPost]
@@ -90,6 +111,7 @@ namespace AntiTruble.Person.Controllers
             {
                 await _personsRepository.Registration(model);
                 await Authenticate(model.PhoneNumber); // аутентификация
+                ViewBag.Role = await InitRole();
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception exception)

@@ -124,7 +124,7 @@
                         var buttonName = "К оплате";
                     }
 
-                    @if (ViewBag.Role == PersonTypes.Administator)
+                    @if (ViewBag.Role != PersonTypes.Client)
                     {
                         buttonName = "Отчет";
                     }

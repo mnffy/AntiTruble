@@ -25,6 +25,17 @@ namespace AntiTruble.Person.Controllers
         {
             _personsRepository = personsRepository;
         }
+        private async Task<PersonTypes> InitRole()
+        {
+            var identity = (ClaimsIdentity)User.Identity;
+            if (identity.Claims.Any())
+            {
+                var userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+                return (PersonTypes)person.Role;
+            }
+            return PersonTypes.None;
+        }
 
         [HttpGet]
         public async Task<IActionResult> AddRepair()
@@ -32,16 +43,14 @@ namespace AntiTruble.Person.Controllers
             var persons = await _personsRepository.GetPersons();
             ViewBag.Clients = persons.Where(x => x.Role == (byte)PersonTypes.Client).Select(x => x.Fio);
             ViewBag.Masters = persons.Where(x => x.Role == (byte)PersonTypes.Master).Select(x => x.Fio);
+            ViewBag.Role = await InitRole();
             return View("_AddRepair");
         }
 
         [HttpGet]
         public async Task<IActionResult> RepairDetails(string repairId)
         {
-            var repairs = new List<RepairInfo>();
-            var identity = (ClaimsIdentity)User.Identity;
-            var userPhoneNumber = identity.Claims.ToList()[0].Value;
-            var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+            ViewBag.Role = await InitRole();
             var result = new RepairInfo();
             var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                    await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
@@ -52,7 +61,6 @@ namespace AntiTruble.Person.Controllers
                 throw new Exception(repairMksResult.Data);
             else
                 result = JsonConvert.DeserializeObject<RepairInfo>(repairMksResult.Data);
-            ViewBag.Role = person.Role;
             return View("_RepairDetails", result);
         }
 
@@ -61,6 +69,7 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
+                ViewBag.Role = await InitRole();
                 if (!Enum.TryParse(model.EType, out EquipmentTypes equipmentType))
                     equipmentType = EquipmentTypes.OtherDevice;
                 if (!Enum.TryParse(model.RType, out RepairTypes repairType))
@@ -103,7 +112,6 @@ namespace AntiTruble.Person.Controllers
                              }))));
                 if (!equipmentMksResult.Success)
                     throw new Exception(equipmentMksResult.Data);
-               
                 return RedirectToAction("Index", "Equipment");
             }
             catch (Exception exception)
@@ -118,6 +126,7 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
+                ViewBag.Role = await InitRole();
                 if (!Enum.TryParse(model.Status, out RepairStatuses repairStatus))
                     throw new Exception("Parsing error");
                 var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
@@ -150,6 +159,7 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
+                ViewBag.Role = await InitRole();
                 var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
                         new RestRequest("/TryToPayOrder", Method.POST)
@@ -195,9 +205,9 @@ namespace AntiTruble.Person.Controllers
                 {
                     var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                        await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
-                           new RestRequest("/GetRepairsById", Method.GET)
+                           new RestRequest("/GetRepairsById", Method.POST)
                                .AddHeader("Content-type", "application/json")
-                               .AddParameter(new Parameter("clientId", person.PersonId, ParameterType.GetOrPost))));
+                               .AddParameter(new Parameter("personId", person.PersonId, ParameterType.RequestBody))));
                     repairs = JsonConvert.DeserializeObject<IEnumerable<RepairInfo>>(repairMksResult.Data).ToList();
                 }
                 ViewBag.Role = (PersonTypes)person.Role;

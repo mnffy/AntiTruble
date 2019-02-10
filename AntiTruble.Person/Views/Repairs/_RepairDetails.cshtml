@@ -132,16 +132,19 @@
             @Model.Cost рублей<br />
         </div>
         <br /><br />
-        <div align="center" style="margin-left:30px;">
-            @if (Model.Status == RepairStatuses.PayWaiting)
-            {
-                <button class="mySuccess" style="width: 178px; height: 30px;" id="payRepair" onclick="onClickPay(@Model.RepairId)">Оплатить</button>
-            }
-            else
-            {
-                <label>Оплата заказа запрещена, так как заказ не находится в статусе ожидания оплаты.</label>
-            }
-        </div>
+              <div align="center" style="margin-left:30px;">
+                  @if (ViewBag.Role == PersonTypes.Client)
+                  {
+                      @if (Model.Status == RepairStatuses.PayWaiting)
+                      {
+                          <button class="mySuccess" style="width: 178px; height: 30px;" id="payRepair" onclick="onClickPay(@Model.RepairId)">Оплатить</button>
+                      }
+                      else
+                      {
+                          <label>Оплата заказа запрещена, так как заказ не находится в статусе ожидания оплаты.</label>
+                      }
+                  }
+              </div>
         <br /><br />
     </div>
 </div>

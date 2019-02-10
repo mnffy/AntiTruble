@@ -83,10 +83,10 @@ namespace AntiTruble.Equipment.Core
         public async Task<IEnumerable<EquipmentInfo>> SearchEquipmentsByPerson(long personId)
         {
             var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
-               await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
-                      new RestRequest("/GetRepairsById", Method.GET)
-                          .AddHeader("Content-type", "application/json")
-                          .AddParameter(new Parameter("clientId", personId, ParameterType.GetOrPost))));
+                      await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                          new RestRequest("/GetRepairsById", Method.POST)
+                              .AddHeader("Content-type", "application/json")
+                              .AddParameter(new Parameter("personId", personId, ParameterType.RequestBody))));
             if (!repairMksResult.Success)
                 throw new Exception(repairMksResult.Data);
 
