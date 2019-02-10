@@ -23,6 +23,17 @@ namespace AntiTruble.Person.Controllers
         {
             _personsRepository = personsRepository;
         }
+        private async Task<PersonTypes> InitRole()
+        {
+            var identity = (ClaimsIdentity)User.Identity;
+            if (identity.Claims.Any())
+            {
+                var userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+                return (PersonTypes)person.Role;
+            }
+            return PersonTypes.None;
+        }
         public async Task<IActionResult> Index()
         {
             try
@@ -49,6 +60,7 @@ namespace AntiTruble.Person.Controllers
                                    ));
                     equipments = JsonConvert.DeserializeObject<IEnumerable<EquipmentInfo>>(equipmentMksResult.Data).ToList();
                 }
+                ViewBag.Role = (PersonTypes)person.Role;
                 return View(equipments);
             }
             catch
@@ -62,6 +74,7 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
+                ViewBag.Role = await InitRole();
                 if (!Enum.TryParse(model.EquipmentType, out EquipmentTypes type))
                     type = EquipmentTypes.OtherDevice;
                 var defects = new List<EquipmentInfoParamModel>();
@@ -100,6 +113,7 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
+                ViewBag.Role = await InitRole();
                 var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
                         new RestRequest("/RemoveEquipment", Method.POST)

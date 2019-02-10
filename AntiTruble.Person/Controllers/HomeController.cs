@@ -1,38 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Linq;
+using AntiTruble.ClassLibrary.Enums;
+using AntiTruble.Person.Core;
+using System.Threading.Tasks;
 
 namespace AntiTruble.Person.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IPersonsRepository _personsRepository;
+        public HomeController(IPersonsRepository personsRepository)
         {
+            _personsRepository = personsRepository;
+        }
+        
+        public async Task<IActionResult> Index()
+        {
+            var role = PersonTypes.None;
+            var identity = (ClaimsIdentity)User.Identity;
+            if (identity.Claims.Any())
+            {
+                var userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+                role = (PersonTypes)person.Role;
+                ViewBag.UserName = person.Fio;
+            }
+            if (role == PersonTypes.None)
+                return RedirectToAction("Login", "Person");
+            ViewBag.Role = role;
             return View();
         }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //}
     }
 }

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using AntiTruble.ClassLibrary.Enums;
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -10,6 +12,7 @@
             border-radius: 4px;
             resize: vertical;
         }
+
         .mySuccess {
             background-color: #4CAF50;
             color: white;
@@ -17,8 +20,9 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top:5px;
+            margin-top: 5px;
         }
+
         .myDanger {
             background-color: #DC143C;
             color: white;
@@ -52,17 +56,27 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">AntiTruble™</a>
+              
+
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
-                    <li><a asp-area="" asp-controller="Equipment" asp-action="Index">Менеджмент устройств</a></li>
-                    <li><a asp-area="" asp-controller="Person" asp-action="Users">Менеджмент пользователей</a></li>
-                    <li><a asp-area="" asp-controller="Repairs" asp-action="RepairList">Заявки</a></li>
-                    <li><a asp-area="" asp-controller="Report" asp-action="Index">Отчет по заявкам</a></li>
-                    <li><a asp-area="" asp-controller="Person" asp-action="Register">Регистрация</a></li>
-                    <li><a asp-area="" asp-controller="Person" asp-action="Login">Войти</a></li>
-                    <li><a asp-area="" asp-controller="Person" asp-action="Logoff">Выйти</a></li>
+                <ul class="nav navbar-nav">                    
+                    @if (ViewBag.Role == PersonTypes.Administator)
+                    {
+                        <li><a asp-area="" asp-controller="Person" asp-action="Users">Менеджмент пользователей</a></li>
+                        <li><a asp-area="" asp-controller="Report" asp-action="Index">Отчет по заявкам</a></li>
+                    }
+                    @if (ViewBag.Role == PersonTypes.None)
+                    {
+                        <li><a asp-area="" asp-controller="Person" asp-action="Login">Войти</a></li>
+                        <li><a asp-area="" asp-controller="Person" asp-action="Register">Регистрация</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-area="" asp-controller="Equipment" asp-action="Index">Менеджмент устройств</a></li>
+                        <li><a asp-area="" asp-controller="Repairs" asp-action="RepairList">Заявки</a></li>
+                        <li><a asp-area="" asp-controller="Person" asp-action="Logoff">Выйти</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -71,6 +85,10 @@
     <partial name="_CookieConsentPartial" />
 
     <div class="container body-content">
+        @if (ViewBag.Role != PersonTypes.None)
+        {
+            <a class="navbar-brand">@ViewBag.UserName</a>
+        }
         @RenderBody()
         <hr />
         <footer>

@@ -4,6 +4,7 @@ using AntiTruble.ClassLibrary.Filters;
 using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Repairs.Core;
 using AntiTruble.Repairs.JsonModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -56,8 +57,8 @@ namespace AntiTruble.Repairs.Controllers
             }
         }
 
-        [HttpGet("GetRepairsById")]
-        public async Task<IActionResult> GetRepairsById(long clientId)
+        [HttpPost("GetRepairsById")]
+        public async Task<IActionResult> GetRepairsById([FromBody]long personId)
         {
             try
             {
@@ -65,7 +66,7 @@ namespace AntiTruble.Repairs.Controllers
                       new
                       {
                           Success = true,
-                          Data = JsonConvert.SerializeObject(await _repairsRepository.GetRepairsById(clientId))
+                          Data = JsonConvert.SerializeObject(await _repairsRepository.GetRepairsById(personId))
                       });
 
             }
@@ -74,25 +75,7 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
-
-        [HttpGet("GetRepairStatus/{personId}")]
-        public async Task<IActionResult> GetRepairStatus(long personId)
-        {
-            try
-            {
-                return Json(
-                      new
-                      {
-                          Success = true,
-                          Data = await _repairsRepository.GetRepairStatus(personId)
-                      });
-
-            }
-            catch (Exception exception)
-            {
-                return Json(new { Success = false, exception.Message });
-            }
-        }
+        
         [HttpGet("GetRepairReport")]
         public async Task<IActionResult> GetRepairReport(long repairId)
         {

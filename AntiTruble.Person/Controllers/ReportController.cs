@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace AntiTruble.Person.Controllers
 {
-    [Authorize]
+   // [Authorize]
     public class ReportController : Controller
     {
         private readonly IPersonsRepository _personsRepository;
@@ -41,6 +41,7 @@ namespace AntiTruble.Person.Controllers
                 }
                 else
                     return RedirectToAction("Index", "Home");
+                ViewBag.Role = (PersonTypes)person.Role;
                 ViewBag.TotalCost = repairs.Sum(x => x.Cost);
                 return View(repairs);
             }
