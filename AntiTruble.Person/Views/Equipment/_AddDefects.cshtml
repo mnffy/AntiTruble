@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "_AddDefects";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Добавление дефектов</h2>
+<br />
+<div class="row">
+    <table id="defectsTable" class="table table-bordered table-responsive table-hover">
+        <tr>
+            <th>Дефект</th>
+            <th>Стоимость</th>
+            <th>Количество дней ремонта</th>
+        </tr>
+        <tr>
+            <td> <input style="height:33px;" size="50" id="defectName" type="text" /></td>
+            <td> <input style="height:33px;" size="50" id="defectPrice" type="text" min="0" /></td>
+            <td> <input style="height:33px;" size="50" id="repairDays" type="text" min="1" /></td>
+        </tr>
+    </table>
+    <div style="float: right; margin-bottom:10px;">
+        <button style="width: 40px; height: 40px;" class="btn-success" id="addrows">+</button>
+    </div>
+</div>
+<br />
+<center>
+    <button class="mySuccess" style="width: 178px; height: 30px;" id="addDefect" onclick="onClickAddDefects()">Добавить</button>
+</center>
+
+<script type="text/javascript">
+
+    $("#addrows").click(function () {
+        $("#defectsTable").each(function () {
+            var tds = '<tr>';
+            jQuery.each($('tr:last td', this), function () {
+                tds += '<td>' + $(this).html() + '</td>';
+            });
+            tds += '</tr>';
+            if ($('tbody', this).length > 0) {
+                $('tbody', this).append(tds);
+            } else {
+                $(this).append(tds);
+            }
+        });
+    });
+
+    function getDefects() {
+        var result = [];
+        var names = document.querySelectorAll('[id=defectName]');
+        var prices = document.querySelectorAll('[id=defectPrice]');
+        var repairDays = document.querySelectorAll('[id=repairDays]');
+        for (j = 0; j < names.length; j++) {
+            result.push({
+                "DefectName": $(names[j].value.toString()).selector,
+                "Price": $(prices[j].value.toString()).selector,
+                "RepairDays": $(repairDays[j].value.toString()).selector
+            });
+        }
+        return result;
+    }
+
+    function onClickAddDefects() {
+        debugger;
+        var eqId = '@ViewBag.Id';
+        var defects = getDefects();
+        if (defects.length < 1) {
+            alert("Указаны не все параметры");
+            return;
+        }
+        var urlPath = '@Url.Action("AddDefects", "Equipment")';
+        $.ajax({
+            type: "POST",
+            data:
+            {
+                "EquipmentId": eqId,
+                "Defects": defects
+            },
+            url: urlPath,
+            success: function () {
+                window.location.href = '@Url.Action("Index", "Equipment")';
+                alert("Дефекты добавлены");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+</script>

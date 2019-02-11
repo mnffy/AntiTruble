@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AntiTruble.ClassLibrary.Filters;
+using AntiTruble.ClassLibrary.Models;
 using AntiTruble.Equipment.Core;
 using AntiTruble.Equipment.JsonModels;
 using Microsoft.AspNetCore.Mvc;
@@ -79,7 +81,7 @@ namespace AntiTruble.Equipment.Controllers
         {
             try
             {
-                await _equipmentRepository.AddEquipment(model.Name, model.EquipmentType, model.Defects, model.RepairId);
+                await _equipmentRepository.AddEquipment(model.Name, model.EquipmentType, model.RepairId);
                 return Json(
                     new
                     {
@@ -92,6 +94,24 @@ namespace AntiTruble.Equipment.Controllers
                 return Json(new { Success = false, exception.Message });
             }
 
+        }
+        [HttpPost("AddDefects")]
+        public async Task<IActionResult> AddDefects([FromBody]EquipmentWithDefectsModel model)
+        {
+            try
+            {
+                await _equipmentRepository.AddDefects(long.Parse(model.EquipmentId), model.Defects);
+                return Json(
+                    new
+                    {
+                        Success = true,
+                        Data = "Ok"
+                    });
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
         }
 
         [HttpPost("RemoveEquipment")]

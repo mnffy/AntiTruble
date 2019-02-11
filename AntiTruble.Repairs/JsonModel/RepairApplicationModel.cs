@@ -13,8 +13,8 @@ namespace AntiTruble.Repairs.JsonModel
         [Required, JsonProperty("RepairType")]
         public byte RepairType { get; set; }
         [Required, JsonProperty("StartDate")]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
         [Required, JsonProperty("EndDate")]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

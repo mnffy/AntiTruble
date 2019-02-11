@@ -68,35 +68,26 @@ namespace AntiTruble.Person.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-        
+
+        [HttpGet]
+        public async Task<IActionResult> OnAddDefects(string equipmentId)
+        {
+            ViewBag.Role = await InitRole();
+            ViewBag.Id = equipmentId;
+            return View("_AddDefects", equipmentId);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> AddEquipment(EquipmentInfoParam model)
+        public async Task<IActionResult> AddDefects(EquipmentWithDefectsModel model)
         {
             try
             {
                 ViewBag.Role = await InitRole();
-                if (!Enum.TryParse(model.EquipmentType, out EquipmentTypes type))
-                    type = EquipmentTypes.OtherDevice;
-                var defects = new List<EquipmentInfoParamModel>();
-                foreach (var defect in model.Defects)
-                {
-                    defects.Add(new EquipmentInfoParamModel
-                    {
-                        DefectName = defect.DefectName,
-                        Price = decimal.Parse(defect.Price)
-                    });
-                }
                 var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
-                        new RestRequest("/CreateEquipment", Method.POST)
+                        new RestRequest("/AddDefects", Method.POST)
                              .AddHeader("Content-type", "application/json")
-                             .AddJsonBody(JsonConvert.SerializeObject(new EquipmentParamModel
-                             {
-                                 Name = model.Name,
-                                 RepairId = long.Parse(model.RepairId),
-                                 EquipmentType = (byte)type,
-                                 Defects = defects
-                             }))));
+                             .AddJsonBody(JsonConvert.SerializeObject(model))));
                 if (!equipmentMksResult.Success)
                     throw new Exception(equipmentMksResult.Data);
                 return RedirectToAction("Index", "Equipment");
