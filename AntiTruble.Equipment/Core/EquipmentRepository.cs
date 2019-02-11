@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AntiTruble.ClassLibrary;
 using AntiTruble.ClassLibrary.Enums;
 using AntiTruble.ClassLibrary.Models;
-using AntiTruble.Equipment.JsonModels;
 using AntiTruble.Equipment.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -20,7 +19,7 @@ namespace AntiTruble.Equipment.Core
         {
             _context = context;
         }
-        public async Task AddEquipment(string name, byte type, IEnumerable<EquipmentInfoParamModel> defects, long repairId)
+        public async Task AddEquipment(string name, byte type, long repairId)
         {
             var equipment = new Equipments
             {
@@ -30,13 +29,21 @@ namespace AntiTruble.Equipment.Core
             };
             _context.Equipments.Add(equipment);
             await _context.SaveChangesAsync();
+           
+        }
+
+        public async Task AddDefects(long equipmentId, IEnumerable<EquipmentDefectsParam> defects)
+        {
+            var equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.EquipmentId == equipmentId);
+            if (equipment == null)
+                throw new Exception("Equipment not found");
             foreach (var defect in defects)
             {
                 _context.EquipmentDefects.Add(new EquipmentDefects
                 {
                     DefectName = defect.DefectName,
                     EquipmentId = equipment.EquipmentId,
-                    Price = defect.Price
+                    Price = decimal.Parse(defect.Price)
                 });
             }
             await _context.SaveChangesAsync();

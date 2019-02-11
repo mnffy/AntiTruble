@@ -33,5 +33,6 @@ namespace AntiTruble.ClassLibrary.Models
     {
         public string DefectName { get; set; }
         public string Price { get; set; }
+        public string RepairDays { get; set; }
     }
 }

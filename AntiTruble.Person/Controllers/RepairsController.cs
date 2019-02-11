@@ -69,36 +69,28 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
-                ViewBag.Role = await InitRole();
+                var identity = (ClaimsIdentity)User.Identity;
+                var userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+                ViewBag.Role = (PersonTypes)person.Role;
                 if (!Enum.TryParse(model.EType, out EquipmentTypes equipmentType))
                     equipmentType = EquipmentTypes.OtherDevice;
                 if (!Enum.TryParse(model.RType, out RepairTypes repairType))
                     repairType = RepairTypes.FirstOfAll;
-                if (!int.TryParse(model.Days, out var repairDays))
-                    repairDays = 30;
                 var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                   await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
                       new RestRequest("/RepairApplication", Method.POST)
                            .AddHeader("Content-type", "application/json")
                            .AddJsonBody(JsonConvert.SerializeObject(new RepairApplicationModel
                            {
-                               ClientFIO = model.Client,
-                               MasterFIO = model.Master,
+                               ClientFIO = person.Fio,
+                               MasterFIO = default(string),
                                RepairType = (byte)repairType,
                                StartDate = DateTime.UtcNow,
-                               EndDate = DateTime.UtcNow.AddDays(repairDays)
+                               EndDate = default(DateTime)
                            }))));
                 if (!repairMksResult.Success)
                     throw new Exception(repairMksResult.Data);
-                var defects = new List<EquipmentInfoParamModel>();
-                foreach (var defect in model.Defects)
-                {
-                    defects.Add(new EquipmentInfoParamModel
-                    {
-                        DefectName = defect.DefectName,
-                        Price = decimal.Parse(defect.Price),
-                    });
-                }
                 var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                     await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
                         new RestRequest("/CreateEquipment", Method.POST)
@@ -108,7 +100,7 @@ namespace AntiTruble.Person.Controllers
                                  Name = model.EquipmentName,
                                  RepairId = long.Parse(repairMksResult.Data),
                                  EquipmentType = (byte)equipmentType,
-                                 Defects = defects
+                                 Defects = new List<EquipmentInfoParamModel>()
                              }))));
                 if (!equipmentMksResult.Success)
                     throw new Exception(equipmentMksResult.Data);

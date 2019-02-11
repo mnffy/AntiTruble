@@ -1,5 +1,4 @@
-﻿@using AntiTruble.Equipment.JsonModels
-@using AntiTruble.ClassLibrary.Enums
+﻿@using AntiTruble.ClassLibrary.Enums
 <h2>Создание заявки</h2>
 
 <div class="col-md-12">
@@ -31,43 +30,7 @@
             });
         }
         @Html.DropDownList("EquipTypesDDL", equipTypesList, null, new { @id = "EquipTypesDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
-    </div>
-    <br />
-    <div class="row">
-        <table id="defectsTable" class="table table-bordered table-responsive table-hover">
-            <tr>
-                <th>Дефект</th>
-                <th>Стоимость</th>
-            </tr>
-            <tr>
-                <td> <input  style="height:33px;" size="80" id="defectName" type="text" /></td>
-                <td> <input  style="height:33px;" size="80" id="defectPrice" type="text" min="0" /></td>
-            </tr>
-        </table>
-        <div style="float: right; margin-bottom:10px;">
-            <button style="width: 40px; height: 40px;" class="btn-success" id="addrows">+</button>
-        </div>
-    </div>
-    <br />
-    @if (ViewBag.Role = PersonTypes.Client)
-    {
-
-    }
-    <div class="row">
-        <label>Мастер:</label><br />
-        @Html.DropDownList("masterDDL",
-                new SelectList(ViewBag.Masters),
-                "Мастер",
-                new { @id = "masterDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
-    </div>
-    <br />
-    <div class="row">
-        <label>Клиент:</label><br />
-        @Html.DropDownList("clientDDL",
-                new SelectList(ViewBag.Clients),
-                "Клиент",
-                new { @id = "clientDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
-    </div>
+    </div>   
     <br />
     <div class="row">
         <label>Тип заявки:</label><br />
@@ -86,59 +49,19 @@
         }
         @Html.DropDownList("RepairTypesDDL", listItems, null, new { @id = "RepairTypesDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
     </div>
-    <br />
-    <div class="row">
-        <label>Количество дней ремонта</label>
-        <br />
-        <input  style="height:33px;" id="repairDays" type="text" />
-    </div>
-    <br />
-    <center>
-        <button class="mySuccess" style="width: 178px; height: 30px;" id="addRepair" onclick="onClickAddRepair()">Создать</button>
-    </center>
-        
+    <br />        
 </div>
+<center>
+    <button class="mySuccess" style="width: 178px; height: 30px;" id="addRepair" onclick="onClickAddRepair()">Создать</button>
+</center>
 
 <script type="text/javascript">
-
-    $("#addrows").click(function () {
-        $("#defectsTable").each(function () {
-            var tds = '<tr>';
-            jQuery.each($('tr:last td', this), function () {
-                tds += '<td>' + $(this).html() + '</td>';
-            });
-            tds += '</tr>';
-            if ($('tbody', this).length > 0) {
-                $('tbody', this).append(tds);
-            } else {
-                $(this).append(tds);
-            }
-        });
-    });
-
-    function getDefects() {
-        var result = [];
-        var names = document.querySelectorAll('[id=defectName]');
-        var prices = document.querySelectorAll('[id=defectPrice]');
-        for (j = 0; j < names.length; j++) {
-            result.push({
-                "DefectName": $(names[j].value.toString()).selector,
-                "Price": $(prices[j].value.toString()).selector
-            });
-        }
-        return result;
-    }
-
+    
     function onClickAddRepair() {
         var equipmentNameTbx = $("#equipmentNameTbx").val();
         var equipType = $("#EquipTypesDDL").val();
-        var master = $("#masterDDL").val();
-        var client = $("#clientDDL").val();
         var repairType = $("#RepairTypesDDL").val();
-        var defects = getDefects();
-        var repairDays = $("#repairDays").val();
-        if (equipmentNameTbx == "" || client == "" || equipType == "" || repairDays == ""
-            || master == "" || repairType == "" || defects.length < 1) {
+        if (equipmentNameTbx == "" || equipType == "" || repairType == "") {
             alert("Указаны не все параметры");
             return;
         }
@@ -149,11 +72,7 @@
             {
                 "EquipmentName": equipmentNameTbx,
                 "EType": equipType,
-                "Master": master,
-                "Client": client,
-                "RType": repairType,
-                "Defects": defects,
-                "Days": repairDays
+                "RType": repairType
             },
             url: urlPath,
             success: function () {
