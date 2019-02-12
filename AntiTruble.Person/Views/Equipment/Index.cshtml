@@ -46,6 +46,7 @@
             <tr>
                 <td>
                     <input type="text" id="idEquipment" value="@equipment.EquipmentId" hidden="hidden" />
+                    <input type="text" id="repairId" value="@equipment.Repair" hidden="hidden" />
                     @equipment.EquipmentId
                 </td>
                 <td>@equipment.Name</td>
@@ -76,7 +77,7 @@
 <script type="text/javascript">
     
     $(document).ready(function () {
-        var UIelements = ["idEquipment", "addDefects"];
+        var UIelements = ["idEquipment", "addDefects", "repairId"];
         for (i = 0; i < UIelements.length; i++) {
             var elementsById = document.querySelectorAll('[id=' + UIelements[i] + ']');
             for (j = 0; j < elementsById.length; j++) {
@@ -113,19 +114,23 @@
     function onClickAddDefects(id) {
         debugger;
         var equipmentId = $("#idEquipment_" + getSecondPart(id)).val();
+        var repairId = $("#repairId_" + getSecondPart(id)).val(); 
         $('#equipment-list').hide();
         var urlPath = '@Url.Action("OnAddDefects", "Equipment")';
         $.ajax({
             type: "GET",
             url: urlPath,
-            data: { "equipmentId": equipmentId },
-                  dataType: "html",
-                  success: function (data) {
-                      $("#add-defects").html(data);
-                    },
-                    error: function () {
-                        alert("error");
-                    }
+            data: {
+                "equipmentId": equipmentId,
+                "repairId": repairId
+            },
+            dataType: "html",
+            success: function (data) {
+                $("#add-defects").html(data);
+            },
+            error: function () {
+                alert("error");
+            }
         });
     }
 

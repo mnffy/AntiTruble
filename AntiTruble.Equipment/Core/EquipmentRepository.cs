@@ -32,11 +32,12 @@ namespace AntiTruble.Equipment.Core
            
         }
 
-        public async Task AddDefects(long equipmentId, IEnumerable<EquipmentDefectsParam> defects)
+        public async Task AddDefects(long equipmentId, long repairId, IEnumerable<EquipmentDefectsParam> defects)
         {
             var equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.EquipmentId == equipmentId);
             if (equipment == null)
                 throw new Exception("Equipment not found");
+            var repairDaysSum = default(int);
             foreach (var defect in defects)
             {
                 _context.EquipmentDefects.Add(new EquipmentDefects
@@ -45,7 +46,19 @@ namespace AntiTruble.Equipment.Core
                     EquipmentId = equipment.EquipmentId,
                     Price = decimal.Parse(defect.Price)
                 });
+                repairDaysSum += int.Parse(defect.RepairDays);
             }
+            var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                    await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                        new RestRequest("/UpdateRepairDays", Method.POST)
+                            .AddHeader("Content-type", "application/json")
+                            .AddJsonBody(JsonConvert.SerializeObject(new RepairWithDaysModel
+                            {
+                                RepairId = repairId,
+                                RepairDays = repairDaysSum
+                            }))));
+            if (!repairMksResult.Success)
+                throw new Exception(repairMksResult.Data);
             await _context.SaveChangesAsync();
         }
 

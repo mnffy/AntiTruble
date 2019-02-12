@@ -100,7 +100,7 @@ namespace AntiTruble.Equipment.Controllers
         {
             try
             {
-                await _equipmentRepository.AddDefects(long.Parse(model.EquipmentId), model.Defects);
+                await _equipmentRepository.AddDefects(long.Parse(model.EquipmentId), long.Parse(model.RepairId), model.Defects);
                 return Json(
                     new
                     {

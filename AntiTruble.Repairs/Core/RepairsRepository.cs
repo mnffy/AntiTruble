@@ -141,6 +141,15 @@ namespace AntiTruble.Repairs.Core
             return result;
         }
 
+        public async Task UpdateRepairDays(long repairId, int repairDays)
+        {
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);
+            if (repair == null)
+                throw new Exception("Repair not found");
+            repair.EndDate = DateTime.UtcNow.AddDays(repairDays);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<bool> TryToPayOrder(long repairId)
         {
             var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == repairId);

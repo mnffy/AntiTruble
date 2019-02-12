@@ -59,19 +59,20 @@
     }
 
     function onClickAddDefects() {
-        debugger;
-        var eqId = '@ViewBag.Id';
+        var eqId = "@ViewBag.Id";
+        var repairId = "@ViewBag.RepairId";
         var defects = getDefects();
         if (defects.length < 1) {
             alert("Указаны не все параметры");
             return;
         }
-        var urlPath = '@Url.Action("AddDefects", "Equipment")';
+        var urlPath = '@Url.Action("AddDefectsForEquipment", "Equipment")';
         $.ajax({
             type: "POST",
             data:
             {
                 "EquipmentId": eqId,
+                "RepairId": repairId,
                 "Defects": defects
             },
             url: urlPath,

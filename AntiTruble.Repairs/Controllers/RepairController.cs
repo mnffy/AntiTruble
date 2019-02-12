@@ -57,6 +57,26 @@ namespace AntiTruble.Repairs.Controllers
             }
         }
 
+        [HttpPost("UpdateRepairDays")]
+        public async Task<IActionResult> UpdateRepairDays([FromBody]RepairWithDaysModel model)
+        {
+            try
+            {
+                await _repairsRepository.UpdateRepairDays(model.RepairId, model.RepairDays);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "Ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
         [HttpPost("GetRepairsById")]
         public async Task<IActionResult> GetRepairsById([FromBody]long personId)
         {
