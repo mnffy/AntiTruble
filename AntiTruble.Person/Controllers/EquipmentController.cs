@@ -70,15 +70,16 @@ namespace AntiTruble.Person.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> OnAddDefects(string equipmentId)
+        public async Task<IActionResult> OnAddDefects(string equipmentId, string repairId)
         {
             ViewBag.Role = await InitRole();
             ViewBag.Id = equipmentId;
-            return View("_AddDefects", equipmentId);
+            ViewBag.RepairId = repairId;
+            return View("_AddDefects");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDefects(EquipmentWithDefectsModel model)
+        public async Task<IActionResult> AddDefectsForEquipment(EquipmentWithDefectsModel model)
         {
             try
             {
