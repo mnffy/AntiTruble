@@ -41,9 +41,10 @@ namespace AntiTruble.Person.Controllers
         public async Task<IActionResult> AddRepair()
         {
             var persons = await _personsRepository.GetPersons();
-            ViewBag.Clients = persons.Where(x => x.Role == (byte)PersonTypes.Client).Select(x => x.Fio);
-            ViewBag.Masters = persons.Where(x => x.Role == (byte)PersonTypes.Master).Select(x => x.Fio);
-            ViewBag.Role = await InitRole();
+            var role = await InitRole();
+            ViewBag.Role = role;
+            if (role == PersonTypes.Administator)
+                ViewBag.Clients = persons.Where(x => x.Role == (byte)PersonTypes.Client).Select(x => x.Fio);
             return View("_AddRepair");
         }
 
@@ -69,14 +70,16 @@ namespace AntiTruble.Person.Controllers
         {
             try
             {
-                var identity = (ClaimsIdentity)User.Identity;
-                var userPhoneNumber = identity.Claims.ToList()[0].Value;
-                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
-                ViewBag.Role = (PersonTypes)person.Role;
                 if (!Enum.TryParse(model.EType, out EquipmentTypes equipmentType))
                     equipmentType = EquipmentTypes.OtherDevice;
                 if (!Enum.TryParse(model.RType, out RepairTypes repairType))
                     repairType = RepairTypes.FirstOfAll;
+                var identity = (ClaimsIdentity)User.Identity;
+                var userPhoneNumber = identity.Claims.ToList()[0].Value;
+                var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
+                if (person.Role == (byte) PersonTypes.Administator)
+                    person.Fio = model.Client;
+                ViewBag.Role = (PersonTypes)person.Role;
                 var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                   await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
                       new RestRequest("/RepairApplication", Method.POST)
@@ -156,6 +159,34 @@ namespace AntiTruble.Person.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> UpdateMaster(RepairWithMasterModel model)
+        {
+            try
+            {
+                ViewBag.Role = await InitRole();
+                var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                    await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                        new RestRequest("/UpdateRepairMaster", Method.POST)
+                             .AddHeader("Content-type", "application/json")
+                             .AddJsonBody(JsonConvert.SerializeObject(model))));
+                if (!repairMksResult.Success)
+                    throw new Exception(repairMksResult.Data);
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = "ok"
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> PayRepair(string repairId)
@@ -213,6 +244,9 @@ namespace AntiTruble.Person.Controllers
                                .AddParameter(new Parameter("personId", person.PersonId, ParameterType.RequestBody))));
                     repairs = JsonConvert.DeserializeObject<IEnumerable<RepairInfo>>(repairMksResult.Data).ToList();
                 }
+                var persons = await _personsRepository.GetPersons();
+                ViewBag.Clients = persons.Where(x => x.Role == (byte)PersonTypes.Client).Select(x => x.Fio);
+                ViewBag.Masters = persons.Where(x => x.Role == (byte)PersonTypes.Master).Select(x => x.Fio);
                 ViewBag.Role = (PersonTypes)person.Role;
                 return View(repairs);
             }

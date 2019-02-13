@@ -30,6 +30,25 @@ namespace AntiTruble.Repairs.Core
             repair.Status = status.Status;
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateRepairMaster(RepairWithMasterModel model)
+        {
+            var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.RepairId == long.Parse(model.RepairId));
+            if (repair == null)
+                throw new Exception("Repair not found");
+            var personMksResultWithClient = JsonConvert.DeserializeObject<MksResponseResult>(
+              await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                  new RestRequest("/GetPersonIdByFIO", Method.POST)
+                      .AddHeader("Content-type", "application/json")
+                      .AddJsonBody(new
+                      {
+                          fio = model.Master
+                      })));
+            if (!personMksResultWithClient.Success)
+                throw new Exception(personMksResultWithClient.Data);
+            repair.Master = long.Parse(personMksResultWithClient.Data);
+            await _context.SaveChangesAsync();
+        }
         public async Task<byte> GetRepairStatus(long personId)
         {
             var repair = await _context.Repairs.FirstOrDefaultAsync(x => x.Client == personId);
@@ -236,16 +255,22 @@ namespace AntiTruble.Repairs.Core
                        })));
             if (!personMksResultWithClient.Success)
                 throw new Exception(personMksResultWithClient.Data);
-            var personMksResultWithMaster = JsonConvert.DeserializeObject<MksResponseResult>(
-               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
-                      new RestRequest("/GetPersonIdByFIO", Method.POST)
-                          .AddHeader("Content-type", "application/json")
-                          .AddJsonBody(new
-                          {
-                              fio = repairModel.MasterFIO
-                          })));
-            if (!personMksResultWithMaster.Success)
-                throw new Exception(personMksResultWithMaster.Data);
+            MksResponseResult result;
+            long? master = null;
+            if (repairModel.MasterFIO != "")
+            {
+                result = JsonConvert.DeserializeObject<MksResponseResult>(
+                     await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                            new RestRequest("/GetPersonIdByFIO", Method.POST)
+                                .AddHeader("Content-type", "application/json")
+                                .AddJsonBody(new
+                                {
+                                    fio = repairModel.MasterFIO
+                                })));
+                if (!result.Success)
+                    throw new Exception(result.Data);
+                master = long.Parse(result.Data);
+            }
             var repair = new Models.Repairs
             {
                 StartDate = repairModel.StartDate,
@@ -253,7 +278,7 @@ namespace AntiTruble.Repairs.Core
                 RepairType = repairModel.RepairType,
                 Status = (byte)RepairStatuses.Confirm,
                 Client = long.Parse(personMksResultWithClient.Data),
-                Master = long.Parse(personMksResultWithMaster.Data)
+                Master = master
             };
             _context.Repairs.Add(repair);
             await _context.SaveChangesAsync();

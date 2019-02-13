@@ -43,7 +43,14 @@ namespace AntiTruble.Person
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("Home/Error");
+            }
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc(routes =>
