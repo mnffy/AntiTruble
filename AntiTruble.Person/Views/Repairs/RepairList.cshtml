@@ -12,140 +12,167 @@
 <div id="repair-list">
     <h2>Заявки:</h2>
     <hr />
-    <div style="float: right; margin-bottom:10px;">
-        <button style="width: 200px; height: 35px;" class="btn" id="addRepair" onclick="onClickAddRepair()">Создать заявку</button>
-    </div>
+    @if (ViewBag.Role == PersonTypes.Administator || ViewBag.Role == PersonTypes.Client)
+    {
+        <div style="float: right; margin-bottom:10px;">
+            <button style="width: 200px; height: 35px;" class="btn" id="addRepair" onclick="onClickAddRepair()">Создать заявку</button>
+        </div>
+    }
     <table class="table table-bordered table-responsive table-hover">
         <tr>
             <th>Статус ремонта</th>
             <th>Дата начала</th>
             <th>Завершение</th>
-            <th>Мастер</th>
+            @if (ViewBag.Role == PersonTypes.Administator || ViewBag.Role == PersonTypes.Client)
+            {
+                <th>Мастер</th>
+            }
             @if (ViewBag.Role != (byte)PersonTypes.Client)
             {
                 <th>Клиент</th>
             }
-
             <th>Тип ремонта</th>
             <th>Действия</th>
         </tr>
         @foreach (var repair in Model)
         {
-        <tr>
-            <td>
-                @{
-                    var listItems = new List<SelectListItem>();
-                    listItems.Add(new SelectListItem
+            <tr>
+                <td>
+                    @{
+                        var listItems = new List<SelectListItem>();
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Заявка принята",
+                            Value = RepairStatuses.Confirm.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Устройство поступило в СЦ",
+                            Value = RepairStatuses.EquipmentInCenter.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Диагностика неисправности",
+                            Value = RepairStatuses.Diagnostic.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Устройство в процессе ремонта",
+                            Value = RepairStatuses.Repair.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Ожидается поставка комплектующих",
+                            Value = RepairStatuses.WaitingParts.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Устройство отремонтировано",
+                            Value = RepairStatuses.CompletedRepair.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Ожидает оплаты",
+                            Value = RepairStatuses.PayWaiting.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Возвращено клиенту",
+                            Value = RepairStatuses.BackToClient.ToString()
+                        });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Заявка отклонена",
+                            Value = RepairStatuses.Cancel.ToString()
+                        });
+                        listItems.First(x => x.Value == repair.Status.ToString()).Selected = true;
+                        var status = listItems.First(x => x.Value == repair.Status.ToString()).Text;
+                    }
+                    <input id="repairId" hidden="hidden" type="text" value="@repair.RepairId" />
+                    @if (ViewBag.Role == (byte)PersonTypes.Client)
                     {
-                        Text = "Заявка принята",
-                        Value = RepairStatuses.Confirm.ToString()
-                    });
-                    listItems.Add(new SelectListItem
+                        @status
+                    }
+                    else
                     {
-                        Text = "Устройство поступило в СЦ",
-                        Value = RepairStatuses.EquipmentInCenter.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Диагностика неисправности",
-                        Value = RepairStatuses.Diagnostic.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Устройство в процессе ремонта",
-                        Value = RepairStatuses.Repair.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Ожидается поставка комплектующих",
-                        Value = RepairStatuses.WaitingParts.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Устройство отремонтировано",
-                        Value = RepairStatuses.CompletedRepair.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Ожидает оплаты",
-                        Value = RepairStatuses.PayWaiting.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Возвращено клиенту",
-                        Value = RepairStatuses.BackToClient.ToString()
-                    });
-                    listItems.Add(new SelectListItem
-                    {
-                        Text = "Заявка отклонена",
-                        Value = RepairStatuses.Cancel.ToString()
-                    });
-                    listItems.First(x => x.Value == repair.Status.ToString()).Selected = true;
-                    var status = listItems.First(x => x.Value == repair.Status.ToString()).Text;
-                }
-                <input id="repairId" hidden="hidden" type="text" value="@repair.RepairId" />
-                @if (ViewBag.Role == (byte)PersonTypes.Client)
-                {
-                    @status
-                }
-                else
-                {
-                    @Html.DropDownList("StatusDDL", listItems, null, new { @id = "statusDDL", @class = "form-control", @onchange = "OnChangeStatusDDL(this.value, this.id)" })
-                }
+                        @Html.DropDownList("StatusDDL", listItems, null, new { @id = "statusDDL", @class = "form-control", @onchange = "OnChangeStatusDDL(this.value, this.id)" })
+                    }
 
-            </td>
-            <td>@repair.StartDate.Value.ToShortDateString()</td>
-            <td>@repair.EndDate.Value.ToShortDateString()</td>
-            <td>@repair.Master.Fio</td>
-            @*<div class="row">
-            <label>Мастер:</label><br />
-            @Html.DropDownList("masterDDL",
-                    new SelectList(ViewBag.Masters),
-                    "Мастер",
-                    new { @id = "masterDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
-        </div>
-        <br />
-        <div class="row">
-            <label>Клиент:</label><br />
-            @Html.DropDownList("clientDDL",
-                    new SelectList(ViewBag.Clients),
-                    "Клиент",
-                    new { @id = "clientDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
-        </div>*@
-            @if (ViewBag.Role != (byte)PersonTypes.Client)
-            {
-                <td>@repair.Client.Fio</td>
-            }
-
-            <td>
-                @{
-                    var repairTypes = new List<SelectListItem>();
-                    repairTypes.Add(new SelectListItem
+                </td>
+                <td>@repair.StartDate.Value.ToShortDateString()</td>
+                <td>
+                    @if (@repair.EndDate.Value.ToShortDateString() == "01.01.0001")
                     {
-                        Text = "Первичный",
-                        Value = RepairTypes.FirstOfAll.ToString()
-                    });
-                    repairTypes.Add(new SelectListItem
+                        <label>Дата не рассчитана</label>
+                    }
+                    else
                     {
-                        Text = "По гарантии",
-                        Value = RepairTypes.Guarantee.ToString()
-                    });
-                    var repairType = repairTypes.First(x => x.Value == repair.RepairType.ToString()).Text;
-                }
-                @repairType
-            </td>
-            <td>
-                @{
-                    var buttonName = "К оплате";
-                }
+                        @repair.EndDate.Value.ToShortDateString()
+                    }
 
-                @if (ViewBag.Role != PersonTypes.Client)
+                </td>
+                @if (ViewBag.Role == PersonTypes.Administator)
                 {
-                    buttonName = "Отчет";
+                    <td>
+                        @if (repair.Master == null)
+                        {
+                            @Html.DropDownList("masterDDL",
+                                new SelectList(ViewBag.Masters),
+                                "Мастер",
+                                new { @id = "masterDDL", @style = "width: 178px; height: 30px;", @class = "form-control", @onchange = "OnChangeMasterDDL(this.value, this.id)" })
+                        }
+                        else
+                        {
+                            @repair.Master.Fio
+                        }
+                    </td>
                 }
-                <button style="width: 150px; height: 30px;" class="btn" id="reportGenerate" onclick="onClickReportGenerate(this.id)">@buttonName</button>
-            </td>
-        </tr>
+                @if (ViewBag.Role == PersonTypes.Client)
+                {
+                    <td>
+                        @if (repair.Master == null)
+                        {
+                            <label>Мастер не назначен</label>
+                        }
+                        else
+                        {
+                            @repair.Master.Fio
+                        }
+                    </td>
+                }
+                @if (ViewBag.Role != (byte)PersonTypes.Client)
+                {
+                    <td>@repair.Client.Fio</td>
+                }
+                <td>
+                    @{
+                        var repairTypes = new List<SelectListItem>();
+                        repairTypes.Add(new SelectListItem
+                        {
+                            Text = "Первичный",
+                            Value = RepairTypes.FirstOfAll.ToString()
+                        });
+                        repairTypes.Add(new SelectListItem
+                        {
+                            Text = "По гарантии",
+                            Value = RepairTypes.Guarantee.ToString()
+                        });
+                        var repairType = repairTypes.First(x => x.Value == repair.RepairType.ToString()).Text;
+                    }
+                    @repairType
+                </td>
+                <td>
+                    @{
+                        var buttonName = "К оплате";
+                    }
+
+                    @if (ViewBag.Role != PersonTypes.Client)
+                    {
+                        buttonName = "Отчет";
+                    }
+                    <button style="width: 150px; height: 30px;" class="btn" id="reportGenerate" onclick="onClickReportGenerate(this.id)">@buttonName</button>
+                </td>
+            </tr>
         }
     </table>
 </div>
@@ -153,7 +180,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        var UIelements = ["statusDDL", "repairId", "reportGenerate", "bill"];
+        var UIelements = ["statusDDL", "repairId", "reportGenerate", "masterDDL"];
         for (i = 0; i < UIelements.length; i++) {
             var elementsById = document.querySelectorAll('[id=' + UIelements[i] + ']');
             for (j = 0; j < elementsById.length; j++) {
@@ -196,6 +223,28 @@
             url: urlPath,
             success: function () {
                 alert("Статус заявки обновлен");
+                location.reload();
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+
+    function OnChangeMasterDDL(val, id) {
+        debugger;
+        var repairId = $("#repairId_" + getSecondPart(id)).val();
+        var urlPath = '@Url.Action("UpdateMaster", "Repairs")';
+        $.ajax({
+            type: "POST",
+            data:
+            {
+                "RepairId": repairId,
+                "Master": val
+            },
+            url: urlPath,
+            success: function () {
+                alert("Мастер обновлен");
             },
             error: function () {
                 alert("error");
@@ -220,5 +269,5 @@
                     }
                 });
     }
-   
+
 </script>

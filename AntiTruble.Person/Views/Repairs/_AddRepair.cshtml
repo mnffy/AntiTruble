@@ -30,7 +30,7 @@
             });
         }
         @Html.DropDownList("EquipTypesDDL", equipTypesList, null, new { @id = "EquipTypesDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
-    </div>   
+    </div>
     <br />
     <div class="row">
         <label>Тип заявки:</label><br />
@@ -49,22 +49,77 @@
         }
         @Html.DropDownList("RepairTypesDDL", listItems, null, new { @id = "RepairTypesDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
     </div>
-    <br />        
+    <br />
+    @if (ViewBag.Role == PersonTypes.Administator)
+    {
+        <div class="row">
+            <label>Клиент:</label><br />
+            @Html.DropDownList("clientDDL",
+                    new SelectList(ViewBag.Clients),
+                    "Клиент",
+                    new { @id = "clientDDL", @style = "width: 178px; height: 30px;", @class = "form-control" })
+        </div>
+        <br/>
+    }
 </div>
 <center>
     <button class="mySuccess" style="width: 178px; height: 30px;" id="addRepair" onclick="onClickAddRepair()">Создать</button>
 </center>
 
 <script type="text/javascript">
-    
+
+    function validateDecimal(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\d*(?:\.\d{0,2})?$/.test(val))) {
+                alert("Пожалуйста, укажите правильные значения нецелочисленных полей");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateInt(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\d+$/.test(val))) {
+                alert("Пожалуйста, укажите правильные значения целочисленных полей");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateString(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        return true;
+    }
+
     function onClickAddRepair() {
+        debugger;
         var equipmentNameTbx = $("#equipmentNameTbx").val();
         var equipType = $("#EquipTypesDDL").val();
         var repairType = $("#RepairTypesDDL").val();
-        if (equipmentNameTbx == "" || equipType == "" || repairType == "") {
-            alert("Указаны не все параметры");
+        var clientFio = $("#clientDDL").val();
+        if ("@ViewBag.Role" == "@PersonTypes.Administator" && clientFio == "") {
+            alert("Укажите клиента");
             return;
         }
+        if (!validateString(equipmentNameTbx) || !validateInt(equipType) || !validateInt(repairType))
+        {
+            return;
+        }
+        if ("@ViewBag.Role" == "@PersonTypes.Client")
+            clientFio = "";
         var urlPath = '@Url.Action("AddRepair", "Repairs")';
         $.ajax({
             type: "POST",
@@ -72,7 +127,8 @@
             {
                 "EquipmentName": equipmentNameTbx,
                 "EType": equipType,
-                "RType": repairType
+                "RType": repairType,
+                "Client": clientFio
             },
             url: urlPath,
             success: function () {

@@ -5,5 +5,6 @@
         public string EquipmentName { get; set; }
         public string EType { get; set; }
         public string RType { get; set; }
+        public string Client { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace AntiTruble.Repairs.Core
     {
         Task<long> RepairApplication(RepairApplicationModel repair);
         Task ChangeRepairStatus(RepairStatusModel status);
+        Task UpdateRepairMaster(RepairWithMasterModel model);
         Task<RepairInfo> GetRepairReport(long repairId);
         Task<IEnumerable<RepairInfo>> GetAllRepairs();
         Task<IEnumerable<RepairInfo>> GetRepairsById(long clientId);

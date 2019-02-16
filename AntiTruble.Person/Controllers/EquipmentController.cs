@@ -75,8 +75,24 @@ namespace AntiTruble.Person.Controllers
             ViewBag.Role = await InitRole();
             ViewBag.Id = equipmentId;
             ViewBag.RepairId = repairId;
+           
             return View("_AddDefects");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckAvailible(string repairId)
+        {
+            var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+            await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                new RestRequest("/GetRepairReport", Method.POST)
+                    .AddHeader("Content-type", "application/json")
+                    .AddParameter(new Parameter("repairId", long.Parse(repairId), ParameterType.RequestBody))));
+            if (!repairMksResult.Success)
+                throw new Exception(repairMksResult.Data);
+            var repair = JsonConvert.DeserializeObject<RepairInfo>(repairMksResult.Data);
+            return Json(new { Availible = repair.Status == RepairStatuses.Diagnostic });
+        }
+       
 
         [HttpPost]
         public async Task<IActionResult> AddDefectsForEquipment(EquipmentWithDefectsModel model)

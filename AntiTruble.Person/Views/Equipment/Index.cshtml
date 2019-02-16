@@ -111,27 +111,55 @@
         }
     }
 
+    function checkAvailible(repairId) {
+
+    }
+
     function onClickAddDefects(id) {
-        debugger;
         var equipmentId = $("#idEquipment_" + getSecondPart(id)).val();
         var repairId = $("#repairId_" + getSecondPart(id)).val(); 
-        $('#equipment-list').hide();
-        var urlPath = '@Url.Action("OnAddDefects", "Equipment")';
+
+        var urlPath = '@Url.Action("CheckAvailible", "Equipment")';
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: urlPath,
             data: {
-                "equipmentId": equipmentId,
                 "repairId": repairId
             },
             dataType: "html",
             success: function (data) {
-                $("#add-defects").html(data);
+                if (data.Availible == "True") {
+                    $('#equipment-list').hide();
+                    urlPath = '@Url.Action("OnAddDefects", "Equipment")';
+                    $.ajax({
+                        type: "GET",
+                        url: urlPath,
+                        data: {
+                            "equipmentId": equipmentId,
+                            "repairId": repairId
+                        },
+                        dataType: "html",
+                        success: function (data) {
+                            $("#add-defects").html(data);
+                        },
+                        error: function () {
+                            alert("error");
+                        }
+                    });
+                }
+                else {
+                    alert("Заявка должна быть в статусе диагностики");
+                    window.location.href = '@Url.Action("Index", "Equipment")';
+                }
+                 
             },
             error: function () {
                 alert("error");
             }
         });
+
+
+       
     }
 
 </script>

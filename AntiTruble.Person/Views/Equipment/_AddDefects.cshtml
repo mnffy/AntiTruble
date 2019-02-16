@@ -27,6 +27,21 @@
 </center>
 
 <script type="text/javascript">
+    function validatePrice(price)
+    {
+        if (price.trim() === "") {
+            alert("Please enter a price");
+            return false;
+        }
+        if (price !== "") {
+            if (!(/^\d*(?:\.\d{0,2})?$/.test(price))) {
+                alert("Please enter a valid values");
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     $("#addrows").click(function () {
         $("#defectsTable").each(function () {
@@ -49,11 +64,16 @@
         var prices = document.querySelectorAll('[id=defectPrice]');
         var repairDays = document.querySelectorAll('[id=repairDays]');
         for (j = 0; j < names.length; j++) {
-            result.push({
-                "DefectName": $(names[j].value.toString()).selector,
-                "Price": $(prices[j].value.toString()).selector,
-                "RepairDays": $(repairDays[j].value.toString()).selector
+            var defect = $(names[j].value.toString()).selector;
+            var price = $(prices[j].value.toString()).selector;
+            var repairDay = $(repairDays[j].value.toString()).selector;
+            if (validatePrice(defect)) {
+                result.push({
+                    "DefectName": defect,
+                    "Price": price,
+                    "RepairDays": repairDay
             });
+            }
         }
         return result;
     }

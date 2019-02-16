@@ -14,6 +14,7 @@ namespace AntiTruble.Person.JsonModels
         [Required, JsonProperty("Role", NullValueHandling = NullValueHandling.Ignore)]
         public byte? Role { get; set; }
         [Required, JsonProperty("PhoneNumber")]
+        [Phone]
         public string PhoneNumber { get; set; }
         [Required, JsonProperty("Address")]
         public string Address { get; set; }
