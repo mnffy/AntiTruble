@@ -96,8 +96,8 @@ namespace AntiTruble.Repairs.Controllers
             }
         }
         
-        [HttpGet("GetRepairReport")]
-        public async Task<IActionResult> GetRepairReport(long repairId)
+        [HttpPost("GetRepairReport")]
+        public async Task<IActionResult> GetRepairReport([FromBody]long repairId)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
-        [HttpPost("UpdatePersonMaster")]
+        [HttpPost("UpdateRepairMaster")]
         public async Task<IActionResult> UpdateRepairMaster([FromBody]RepairWithMasterModel model)
         {
             try

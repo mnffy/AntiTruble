@@ -100,7 +100,17 @@
 
                 </td>
                 <td>@repair.StartDate.Value.ToShortDateString()</td>
-                <td>@repair.EndDate.Value.ToShortDateString()</td>
+                <td>
+                    @if (@repair.EndDate.Value.ToShortDateString() == "01.01.0001")
+                    {
+                        <label>Дата не рассчитана</label>
+                    }
+                    else
+                    {
+                        @repair.EndDate.Value.ToShortDateString()
+                    }
+
+                </td>
                 @if (ViewBag.Role == PersonTypes.Administator)
                 {
                     <td>
@@ -222,6 +232,7 @@
     }
 
     function OnChangeMasterDDL(val, id) {
+        debugger;
         var repairId = $("#repairId_" + getSecondPart(id)).val();
         var urlPath = '@Url.Action("UpdateMaster", "Repairs")';
         $.ajax({

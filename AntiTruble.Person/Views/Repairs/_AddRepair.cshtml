@@ -67,19 +67,58 @@
 </center>
 
 <script type="text/javascript">
-    
+
+    function validateDecimal(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\d*(?:\.\d{0,2})?$/.test(val))) {
+                alert("Пожалуйста, укажите правильные значения нецелочисленных полей");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateInt(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\d+$/.test(val))) {
+                alert("Пожалуйста, укажите правильные значения целочисленных полей");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateString(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        return true;
+    }
+
     function onClickAddRepair() {
+        debugger;
         var equipmentNameTbx = $("#equipmentNameTbx").val();
         var equipType = $("#EquipTypesDDL").val();
         var repairType = $("#RepairTypesDDL").val();
         var clientFio = $("#clientDDL").val();
-        if ((@ViewBag.Role == @PersonTypes.Administator && clientFio == "") ||
-            equipmentNameTbx == "" || equipType == "" || repairType == "")
-        {
-            alert("Указаны не все параметры");
+        if ("@ViewBag.Role" == "@PersonTypes.Administator" && clientFio == "") {
+            alert("Укажите клиента");
             return;
         }
-        if (@ViewBag.Role == @PersonTypes.Client)
+        if (!validateString(equipmentNameTbx) || !validateInt(equipType) || !validateInt(repairType))
+        {
+            return;
+        }
+        if ("@ViewBag.Role" == "@PersonTypes.Client")
             clientFio = "";
         var urlPath = '@Url.Action("AddRepair", "Repairs")';
         $.ajax({

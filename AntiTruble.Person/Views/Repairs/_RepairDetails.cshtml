@@ -78,7 +78,15 @@
         </div>
         <div class="form-group">
             <label>Завершение работы:</label><br />
-            @Model.EndDate.Value.ToShortDateString()<br />
+                @if (@Model.EndDate.Value.ToShortDateString() == "01.01.0001")
+                {
+                    <label>Дата не рассчитана</label>
+                }
+                else
+                {
+                   @Model.EndDate.Value.ToShortDateString()
+                }
+            <br />
         </div>
         @{
             var repairTypes = new List<SelectListItem>();
@@ -135,7 +143,7 @@
               <div align="center" style="margin-left:30px;">
                   @if (ViewBag.Role == PersonTypes.Client)
                   {
-                      @if (Model.Status == RepairStatuses.PayWaiting)
+                      @if (Model.Status == RepairStatuses.PayWaiting && @Model.EndDate.Value.ToShortDateString() != "01.01.0001")
                       {
                           <button class="mySuccess" style="width: 178px; height: 30px;" id="payRepair" onclick="onClickPay(@Model.RepairId)">Оплатить</button>
                       }

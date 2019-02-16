@@ -87,7 +87,7 @@ namespace AntiTruble.Person.Controllers
                            .AddJsonBody(JsonConvert.SerializeObject(new RepairApplicationModel
                            {
                                ClientFIO = person.Fio,
-                               MasterFIO = default(string),
+                               MasterFIO = "не определен",
                                RepairType = (byte)repairType,
                                StartDate = DateTime.UtcNow,
                                EndDate = default(DateTime)

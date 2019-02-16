@@ -72,17 +72,21 @@ namespace AntiTruble.Repairs.Core
                           })));
             if (!personMksResultWithClient.Success)
                 throw new Exception(personMksResultWithClient.Data);
-            var personMksResultWithMaster = JsonConvert.DeserializeObject<MksResponseResult>(
-               await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
-                      new RestRequest("/GetPersonById", Method.POST)
-                          .AddHeader("Content-type", "application/json")
-                          .AddJsonBody(new
-                          {
-                              id = repair.Master
-                          })));
-            if (!personMksResultWithMaster.Success)
-                throw new Exception(personMksResultWithMaster.Data);
-            var master = JsonConvert.DeserializeObject<PersonModel>(personMksResultWithMaster.Data);
+            PersonModel master = null;
+            if (repair.Master != null)
+            {
+                var personMksResultWithMaster = JsonConvert.DeserializeObject<MksResponseResult>(
+              await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
+                     new RestRequest("/GetPersonById", Method.POST)
+                         .AddHeader("Content-type", "application/json")
+                         .AddJsonBody(new
+                         {
+                             id = repair.Master
+                         })));
+                if (!personMksResultWithMaster.Success)
+                    throw new Exception(personMksResultWithMaster.Data);
+                master = JsonConvert.DeserializeObject<PersonModel>(personMksResultWithMaster.Data);
+            }
             var client = JsonConvert.DeserializeObject<PersonModel>(personMksResultWithClient.Data);
             var equipmentMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                 await RequestExecutor.ExecuteRequest(Scope.EquipmentMksUrl,
@@ -100,26 +104,8 @@ namespace AntiTruble.Repairs.Core
             repairInfo.EndDate = repair.EndDate.Value;
             repairInfo.RepairId = repair.RepairId;
             repairInfo.RepairType = (RepairTypes)repair.RepairType.Value;
-            repairInfo.Master = new PersonModel
-            {
-                Address = master.Address,
-                Balance = master.Balance,
-                Fio = master.Fio,
-                Password = master.Password,
-                PersonId = master.PersonId,
-                PhoneNumber = master.PhoneNumber,
-                Role = master.Role
-            };
-            repairInfo.Client = new PersonModel
-            {
-                Address = client.Address,
-                Balance = client.Balance,
-                Fio = client.Fio,
-                Password = client.Password,
-                PersonId = client.PersonId,
-                PhoneNumber = client.PhoneNumber,
-                Role = client.Role
-            };
+            repairInfo.Master = master;
+            repairInfo.Client = client;
             repairInfo.Equipments = equipmentsInfo;
             repairInfo.Cost = cost;
             return repairInfo;
@@ -257,7 +243,7 @@ namespace AntiTruble.Repairs.Core
                 throw new Exception(personMksResultWithClient.Data);
             MksResponseResult result;
             long? master = null;
-            if (repairModel.MasterFIO != "")
+            if (repairModel.MasterFIO != "не определен")
             {
                 result = JsonConvert.DeserializeObject<MksResponseResult>(
                      await RequestExecutor.ExecuteRequest(Scope.PersonMksUrl,
