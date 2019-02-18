@@ -232,7 +232,6 @@
     }
 
     function OnChangeMasterDDL(val, id) {
-        debugger;
         var repairId = $("#repairId_" + getSecondPart(id)).val();
         var urlPath = '@Url.Action("UpdateMaster", "Repairs")';
         $.ajax({
@@ -253,6 +252,7 @@
     }
 
     function onClickReportGenerate(id) {
+        debugger;
         var repairId = $("#repairId_" + getSecondPart(id)).val();
         $('#repair-list').hide();
               var urlPath = '@Url.Action("RepairDetails", "Repairs")';

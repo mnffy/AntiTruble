@@ -118,7 +118,6 @@
     function onClickAddDefects(id) {
         var equipmentId = $("#idEquipment_" + getSecondPart(id)).val();
         var repairId = $("#repairId_" + getSecondPart(id)).val(); 
-
         var urlPath = '@Url.Action("CheckAvailible", "Equipment")';
         $.ajax({
             type: "POST",
@@ -128,7 +127,9 @@
             },
             dataType: "html",
             success: function (data) {
-                if (data.Availible == "True") {
+                debugger;
+                var result = JSON.parse(data);
+                if (result.availible == true) {
                     $('#equipment-list').hide();
                     urlPath = '@Url.Action("OnAddDefects", "Equipment")';
                     $.ajax({
