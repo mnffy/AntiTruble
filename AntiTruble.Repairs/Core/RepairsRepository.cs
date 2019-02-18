@@ -128,6 +128,24 @@ namespace AntiTruble.Repairs.Core
             return result;
         }
 
+        public async Task<IEnumerable<RepairInfo>> GetRepairsByMasterId(long master)
+        {
+            var repairIds = _context.Repairs.Where(x => x.Master == master).Select(x => x.RepairId);
+            var result = new List<RepairInfo>();
+            foreach (var repairId in repairIds)
+            {
+                try
+                {
+                    result.Add(await GetRepairReport(repairId));
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            return result;
+        }
+
         public async Task<IEnumerable<RepairInfo>> GetRepairsById(long clientId)
         {
             var repairIds = _context.Repairs.Where(x => x.Client == clientId).Select(x => x.RepairId);

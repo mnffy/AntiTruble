@@ -85,6 +85,11 @@
                             Text = "Заявка отклонена",
                             Value = RepairStatuses.Cancel.ToString()
                         });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Заявка оплачена",
+                            Value = RepairStatuses.Paid.ToString()
+                        });
                         listItems.First(x => x.Value == repair.Status.ToString()).Selected = true;
                         var status = listItems.First(x => x.Value == repair.Status.ToString()).Text;
                     }
