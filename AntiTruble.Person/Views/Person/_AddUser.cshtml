@@ -3,52 +3,69 @@
 @model PersonModel
 
 <h2>Добавление нового пользователя</h2>
-    <div class="validation" asp-validation-summary="ModelOnly"></div>
-    <div>
-        <br />
-        <div class="row">
-            <label asp-for="Fio">ФИО</label><br />
-            <input style="height:30px;" id="fioTextBox" type="text" asp-for="Fio" />
-            <span asp-validation-for="Fio" />
-        </div>
-        <br />
-        <div class="row">
-            <label asp-for="PhoneNumber">Номер телефона</label><br />
-            <input style="height:30px;" id="phoneNumberTextBox" type="text" asp-for="PhoneNumber" />
-            <span asp-validation-for="PhoneNumber" />
-        </div>
-        <br />
-        <div class="row">
-            <label>Роль</label><br />
-            @Html.DropDownList("RoleDDL",
-                    new SelectList(Enum.GetValues(typeof(PersonTypes))),
-                    "Роль в системе",
-                    new { @id = "roleDDL", @style = "width: 175px; height: 30px;", @class = "form-control" })
-            <span asp-validation-for="Role" />
-        </div>
-        <br />
-        <div class="row">
-            <label asp-for="Address">Адрес</label><br />
-            <input style="height:30px;" id="addressTextBox" type="text" asp-for="Address" />
-            <span asp-validation-for="Address" />
-        </div>
-        <br />
-        <div class="row">
-            <label asp-for="Password">Пароль</label><br />
-            <input style="height:30px;" id="password" type="text" asp-for="Password" />
-            <span asp-validation-for="Password" />
-        </div>
-        <br />
-        <div class="row">
-            <button class="mySuccess" style="width: 176px; height: 30px;" id="addUser" onclick="onClickAddUser()">Добавить</button>
-        </div>
+<div class="validation" asp-validation-summary="ModelOnly"></div>
+<div>
+    <br />
+    <div class="row">
+        <label asp-for="Fio">ФИО</label><br />
+        <input style="height:30px;" id="fioTextBox" type="text" asp-for="Fio" />
+        <span asp-validation-for="Fio" />
     </div>
     <br />
+    <div class="row">
+        <label asp-for="PhoneNumber">Номер телефона</label><br />
+        <input style="height:30px;" id="phoneNumberTextBox" type="text" asp-for="PhoneNumber" />
+        <span asp-validation-for="PhoneNumber" />
+    </div>
+    <br />
+    <div class="row">
+        <label>Роль</label><br />
+        @Html.DropDownList("RoleDDL",
+                new SelectList(Enum.GetValues(typeof(PersonTypes))),
+                "Роль в системе",
+                new { @id = "roleDDL", @style = "width: 175px; height: 30px;", @class = "form-control" })
+        <span asp-validation-for="Role" />
+    </div>
+    <br />
+    <div class="row">
+        <label asp-for="Address">Адрес</label><br />
+        <input style="height:30px;" id="addressTextBox" type="text" asp-for="Address" />
+        <span asp-validation-for="Address" />
+    </div>
+    <br />
+    <div class="row">
+        <label asp-for="Password">Пароль</label><br />
+        <input style="height:30px;" id="password" type="text" asp-for="Password" />
+        <span asp-validation-for="Password" />
+    </div>
+    <br />
+    <div class="row">
+        <button class="mySuccess" style="width: 176px; height: 30px;" id="addUser" onclick="onClickAddUser()">Добавить</button>
+    </div>
+</div>
+<br />
 
 <script type="text/javascript">
+    
+    function validateString(val) {
+        if (val.trim() === "") {
+            alert("Укажите все значения");
+            return false;
+        }
+        return true;
+    }
 
-      function onClickAddUser() {
-          debugger;
+    function onClickAddUser() {
+        var fio = $("#fioTextBox").val();
+        var phoneNumber = $("#phoneNumberTextBox").val();
+        var address = $("#addressTextBox").val();
+        var role = $("#roleDDL").val();
+        var password = $("#password").val();
+
+        if (!validateString(fio) || !validateString(phoneNumber) || !validateString(address) ||
+            !validateString(role) || !validateString(password)) {
+            return;
+        }
           var urlPath = '@Url.Action("AddUser", "Person")';
           $.ajax({
               type: "POST",

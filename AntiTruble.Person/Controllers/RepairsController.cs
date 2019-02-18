@@ -54,10 +54,10 @@ namespace AntiTruble.Person.Controllers
             ViewBag.Role = await InitRole();
             var result = new RepairInfo();
             var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
-                   await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
-                       new RestRequest("/GetRepairReport", Method.GET)
-                            .AddHeader("Content-type", "application/json")
-                            .AddParameter(new Parameter("repairId", long.Parse(repairId), ParameterType.GetOrPost))));
+                 await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                new RestRequest("/GetRepairReport", Method.POST)
+                    .AddHeader("Content-type", "application/json")
+                    .AddParameter(new Parameter("repairId", long.Parse(repairId), ParameterType.RequestBody))));
             if (!repairMksResult.Success)
                 throw new Exception(repairMksResult.Data);
             else
