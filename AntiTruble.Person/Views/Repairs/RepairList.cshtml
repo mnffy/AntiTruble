@@ -175,7 +175,11 @@
                     {
                         buttonName = "Отчет";
                     }
-                    <button style="width: 150px; height: 30px;" class="btn" id="reportGenerate" onclick="onClickReportGenerate(this.id)">@buttonName</button>
+                    @if (status != "Заявка оплачена" && ViewBag.Role == PersonTypes.Client || ViewBag.Role != PersonTypes.Client)
+                    {
+                        <button style="width: 150px; height: 30px;" class="btn" id="reportGenerate" onclick="onClickReportGenerate(this.id)">@buttonName</button>
+                    }
+
                 </td>
             </tr>
         }
