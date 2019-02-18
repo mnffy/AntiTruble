@@ -227,7 +227,16 @@ namespace AntiTruble.Person.Controllers
                 var identity = (ClaimsIdentity)User.Identity;
                 var userPhoneNumber = identity.Claims.ToList()[0].Value;
                 var person = await _personsRepository.GetPersonByPhoneNumber(userPhoneNumber);
-                if (person.Role == (byte)PersonTypes.Administator || person.Role == (byte)PersonTypes.Master)
+                if (person.Role == (byte)PersonTypes.Master)
+                {
+                    var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
+                       await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,
+                           new RestRequest("/GetRepairsByMasterId", Method.POST)
+                               .AddHeader("Content-type", "application/json")
+                               .AddParameter(new Parameter("personId", person.PersonId, ParameterType.RequestBody))));
+                    repairs = JsonConvert.DeserializeObject<IEnumerable<RepairInfo>>(repairMksResult.Data).ToList();
+                }
+                if (person.Role == (byte)PersonTypes.Administator)
                 {
                     var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                         await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,

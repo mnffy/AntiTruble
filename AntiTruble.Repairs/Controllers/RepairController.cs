@@ -95,6 +95,25 @@ namespace AntiTruble.Repairs.Controllers
                 return Json(new { Success = false, exception.Message });
             }
         }
+
+        [HttpPost("GetRepairsByMasterId")]
+        public async Task<IActionResult> GetRepairsByMasterId([FromBody]long personId)
+        {
+            try
+            {
+                return Json(
+                      new
+                      {
+                          Success = true,
+                          Data = JsonConvert.SerializeObject(await _repairsRepository.GetRepairsByMasterId(personId))
+                      });
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { Success = false, exception.Message });
+            }
+        }
         
         [HttpPost("GetRepairReport")]
         public async Task<IActionResult> GetRepairReport([FromBody]long repairId)
