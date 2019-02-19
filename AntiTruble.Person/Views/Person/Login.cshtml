@@ -7,17 +7,59 @@
         <div>
             <div class="form-group">
                 <label asp-for="PhoneNumber">Введите номер телефона</label><br />
-                <input type="text" asp-for="PhoneNumber" />
+                <input id="phoneTbx" type="text" asp-for="PhoneNumber" />
                 <span asp-validation-for="PhoneNumber" />
             </div>
             <div class="form-group">
                 <label asp-for="Password">Введите пароль</label><br />
-                <input asp-for="Password" />
+                <input id="passwordTbx" asp-for="Password" />
                 <span asp-validation-for="Password" />
             </div>
             <div class="form-group">
-                <input type="submit" value="Войти" class="mySuccess" />
+                <input id="successBtn" type="submit" value="Войти" class="mySuccess" />
             </div>
         </div>
     </form>
 </center>
+<script>
+
+    $("#successBtn").mouseover(function () {
+        var phone = $("#phoneTbx").val();
+        var pass = $("#passwordTbx").val();
+        if (!validatePhone(phone) || !validatePass(pass)) {
+            //  $("#successBtn").prop("disabled") = true;
+        }
+        else {
+            // $("#successBtn").prop("disabled") = false;
+        }
+    });
+
+    function validatePass(val) {
+        if (val.trim() === "") {
+            alert("Укажите пароль");
+            return false;
+        }
+        if (val !== "") {
+            if (val.length < 8) {
+                alert("Пожалуйста, укажите пароль длиннее 8 символов");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validatePhone(val) {
+        if (val.trim() === "") {
+            alert("Укажите номер");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\+?[78][-\(]?\d{3}\)?-?\d{3}-?\d{2}-?\d{2}$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение номер телефона. Примеры: \n89103123167, 7-910-221-22-22, +7(910)-221-22-22");
+                return false;
+            }
+        }
+        return true;
+    }
+
+</script>

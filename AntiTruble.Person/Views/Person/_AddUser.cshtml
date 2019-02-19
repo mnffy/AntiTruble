@@ -46,7 +46,62 @@
 <br />
 
 <script type="text/javascript">
-    
+
+    $("#addUser").mouseover(function () {
+        var fio = $("#fioTextBox").val();
+        var phoneNumber = $("#phoneNumberTextBox").val();
+        var address = $("#addressTextBox").val();
+        var role = $("#roleDDL").val();
+        var password = $("#password").val();
+        if (!validateFio(fio) || !validatePhone(phoneNumber) || !validateString(address) ||
+            !validateString(role) || !validatePass(password)) {
+
+        }
+    });
+
+    function validateFio(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^([А-ЯA-Z]|[А-ЯA-Z][\x27а-яa-z]{1,}|[А-ЯA-Z][\x27а-яa-z]{1,}\-([А-ЯA-Z][\x27а-яa-z]{1,}|(оглы)|(кызы)))\040[А-ЯA-Z][\x27а-яa-z]{1,}(\040[А-ЯA-Z][\x27а-яa-z]{1,})?$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение ФИО");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validatePass(val) {
+        if (val.trim() === "") {
+            alert("Укажите пароль");
+            return false;
+        }
+        if (val !== "") {
+            if (val.length < 8) {
+                alert("Пожалуйста, укажите пароль длиннее 8 символов");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validatePhone(val) {
+        if (val.trim() === "") {
+            alert("Укажите номер");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\+?[78][-\(]?\d{3}\)?-?\d{3}-?\d{2}-?\d{2}$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение номер телефона. Примеры: \n89103123167, 7-910-221-22-22, +7(910)-221-22-22");
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     function validateString(val) {
         if (val.trim() === "") {
             alert("Укажите все значения");
@@ -56,16 +111,6 @@
     }
 
     function onClickAddUser() {
-        var fio = $("#fioTextBox").val();
-        var phoneNumber = $("#phoneNumberTextBox").val();
-        var address = $("#addressTextBox").val();
-        var role = $("#roleDDL").val();
-        var password = $("#password").val();
-
-        if (!validateString(fio) || !validateString(phoneNumber) || !validateString(address) ||
-            !validateString(role) || !validateString(password)) {
-            return;
-        }
           var urlPath = '@Url.Action("AddUser", "Person")';
           $.ajax({
               type: "POST",

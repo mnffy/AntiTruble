@@ -7,13 +7,13 @@
         <div>
             <div>
                 <label asp-for="Fio">Введите ФИО</label><br />
-                <input type="text" asp-for="Fio" />
+                <input id="fioTbx" type="text" asp-for="Fio" />
                 <span asp-validation-for="Fio" />
             </div>
             <br />
             <div>
                 <label asp-for="PhoneNumber">Введите номер телефона</label><br />
-                <input type="text" asp-for="PhoneNumber" />
+                <input id="phoneTbx" type="text" asp-for="PhoneNumber" />
                 <span asp-validation-for="PhoneNumber" />
             </div>
             <br />
@@ -25,7 +25,7 @@
             <br />
             <div>
                 <label asp-for="Password">Введите пароль</label><br />
-                <input asp-for="Password" />
+                <input id="passTextbox" asp-for="Password" />
                 <span asp-validation-for="Password" />
             </div>
             <br />
@@ -39,8 +39,65 @@
             </div>
             <br />
             <div>
-                <input class="mySuccess" style="width: 176px; height: 30px;" type="submit" value="Регистрация" />
+                <input id="successBtn" class="mySuccess" style="width: 176px; height: 30px;" type="submit" value="Регистрация" />
             </div>
         </div>
     </form>
 </center>
+<script >
+
+    $("#successBtn").mouseover(function () {
+        var fio = $("#fioTbx").val();
+        var phone = $("#phoneTbx").val();
+        var pass = $("#passTextbox").val();
+        if (!validateFio(fio) || !validatePhone(phone) || !validatePass(pass)) {
+          //  $("#successBtn").prop("disabled") = true;
+        }
+        else {
+          // $("#successBtn").prop("disabled") = false;
+        }
+    });
+
+    function validatePass(val) {
+        if (val.trim() === "") {
+            alert("Укажите пароль");
+            return false;
+        }
+        if (val !== "") {
+            if (val.length < 8) {
+                alert("Пожалуйста, укажите пароль длиннее 8 символов");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validatePhone(val) {
+        if (val.trim() === "") {
+            alert("Укажите номер");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\+?[78][-\(]?\d{3}\)?-?\d{3}-?\d{2}-?\d{2}$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение номер телефона. Примеры: \n89103123167, 7-910-221-22-22, +7(910)-221-22-22");
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function validateFio(val) {
+        if (val.trim() === "") {
+            alert("Укажите фио");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^([А-ЯA-Z]|[А-ЯA-Z][\x27а-яa-z]{1,}|[А-ЯA-Z][\x27а-яa-z]{1,}\-([А-ЯA-Z][\x27а-яa-z]{1,}|(оглы)|(кызы)))\040[А-ЯA-Z][\x27а-яa-z]{1,}(\040[А-ЯA-Z][\x27а-яa-z]{1,})?$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение ФИО");
+                return false;
+            }
+        }
+        return true;
+    }
+
+</script>

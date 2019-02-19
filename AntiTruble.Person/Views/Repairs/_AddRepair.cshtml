@@ -68,20 +68,6 @@
 
 <script type="text/javascript">
 
-    function validateDecimal(val) {
-        if (val.trim() === "") {
-            alert("Укажите значения");
-            return false;
-        }
-        if (val !== "") {
-            if (!(/^\d*(?:\.\d{0,2})?$/.test(val))) {
-                alert("Пожалуйста, укажите правильные значения нецелочисленных полей");
-                return false;
-            }
-        }
-        return true;
-    }
-
     function validateInt(val) {
         if (val.trim() === "") {
             alert("Укажите значения");
