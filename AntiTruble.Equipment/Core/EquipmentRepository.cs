@@ -44,7 +44,7 @@ namespace AntiTruble.Equipment.Core
                 {
                     DefectName = defect.DefectName,
                     EquipmentId = equipment.EquipmentId,
-                    Price = decimal.Parse(defect.Price.Replace('.',','))
+                    Price = decimal.Parse(defect.Price)
                 });
                 repairDaysSum += int.Parse(defect.RepairDays);
             }

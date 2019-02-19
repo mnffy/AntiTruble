@@ -34,7 +34,7 @@
             return false;
         }
         if (val !== "") {
-            if (!(/^\d*(?:\.\d{0,2})?$/.test(val))) {
+            if (!(/^\d*(?:\,\d{0,4})?$/.test(val))) {
                 alert("Пожалуйста, укажите правильные значения нецелочисленных полей");
                 return false;
             }
@@ -108,6 +108,7 @@
         var repairId = "@ViewBag.RepairId";
         var defects = getDefects();
         if (defects.length < 1) {
+            aler("Ошибка валидации дефектов");
             return;
         }
         var urlPath = '@Url.Action("AddDefectsForEquipment", "Equipment")';

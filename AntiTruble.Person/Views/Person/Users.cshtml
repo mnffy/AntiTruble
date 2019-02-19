@@ -29,7 +29,7 @@
             <tr>
                 <td>
                     <input class="text" type="text" hidden="hidden" style="width:170px;" id="idTextBox" value="@user.PersonId" />
-                    <input class="text"  type="text" style="width:170px;height:33px;" id="fioTextBox" value="@user.Fio" />
+                    <input class="text" type="text" style="width:170px;height:33px;" id="fioTextBox" value="@user.Fio" />
                 </td>
                 <td>
                     <input type="text" style="height:33px;" id="phoneNumberTextBox" value="@user.PhoneNumber" />
@@ -100,7 +100,6 @@
     }
 
         function onClickAddUser() {
-            debugger;
             $('#user-list').hide();
               var urlPath = '@Url.Action("AddUserView", "Person")';
               $.ajax({
@@ -116,9 +115,92 @@
                 });
         }
 
+    function validatePass(val) {
+        if (val.trim() === "") {
+            alert("Укажите пароль");
+            return false;
+        }
+        if (val !== "") {
+            if (val.length < 8) {
+                alert("Пожалуйста, укажите пароль длиннее 8 символов");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validatePhone(val) {
+        if (val.trim() === "") {
+            alert("Укажите номер");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\+?[78][-\(]?\d{3}\)?-?\d{3}-?\d{2}-?\d{2}$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение номер телефона. Примеры: \n89103123167, 7-910-221-22-22, +7(910)-221-22-22");
+                return false;
+            }
+        }
+        return true;
+    }
+    function validateDecimal(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\d*(?:\,\d{0,4})?$/.test(val))) {
+                alert("Пожалуйста, укажите правильные значения нецелочисленных полей");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateString(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        return true;
+    }
+
+    function validateInt(val) {
+        if (val.trim() === "") {
+            alert("Укажите значения");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^\d+$/.test(val))) {
+                alert("Пожалуйста, укажите правильные значения целочисленных полей");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function validateFio(val) {
+        if (val.trim() === "") {
+            alert("Укажите фио");
+            return false;
+        }
+        if (val !== "") {
+            if (!(/^([А-ЯA-Z]|[А-ЯA-Z][\x27а-яa-z]{1,}|[А-ЯA-Z][\x27а-яa-z]{1,}\-([А-ЯA-Z][\x27а-яa-z]{1,}|(оглы)|(кызы)))\040[А-ЯA-Z][\x27а-яa-z]{1,}(\040[А-ЯA-Z][\x27а-яa-z]{1,})?$/.test(val))) {
+                alert("Пожалуйста, укажите правильное значение ФИО");
+                return false;
+            }
+        }
+        return true;
+    }
+
     function onClickUpdateUser(longId) {
+        debugger;
         var rowId = getSecondPart(longId);
         var rowData = getRowData(rowId);
+        if (!validateInt(rowData.PersonId) || !validateFio(rowData.Fio) || !validatePhone(rowData.PhoneNumber) ||
+            !validateString(rowData.Address) || !validateDecimal(rowData.Balance))
+        {
+            return;
+        }
         var urlPath = '@Url.Action("UpdateUser", "Person")';
           $.ajax({
               type: "POST",
