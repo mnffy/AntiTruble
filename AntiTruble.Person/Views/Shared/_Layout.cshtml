@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Сервисный центр "Антитрабл"</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <style type="text/css">
         input[type=text] {
             border: 1px solid #ccc;
@@ -60,7 +61,8 @@
 
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">                    
+                <ul class="nav navbar-nav">               
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Контакты</a></li>
                     @if (ViewBag.Role == PersonTypes.Administator)
                     {
                         <li><a asp-area="" asp-controller="Person" asp-action="Users">Менеджмент пользователей</a></li>
