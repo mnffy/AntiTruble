@@ -5,10 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Folder Include="Pictures\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\images\1488995556_custom.jpg" />
+    <None Include="wwwroot\images\6-1.jpg" />
+    <None Include="wwwroot\images\remont-kompyuterov-ufa-1.jpg" />
+    <None Include="wwwroot\images\remont-kompyuterov-ufa-2.jpg" />
+    <None Include="wwwroot\images\ustanovka-windows-ufa-3.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bootstrap" Version="4.3.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.0" />

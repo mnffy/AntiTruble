@@ -32,5 +32,11 @@ namespace AntiTruble.Person.Controllers
             ViewBag.Role = role;
             return View();
         }
+        public IActionResult Contact()
+        {
+            ViewData["Message"] = "Страница контактов.";
+
+            return View();
+        }
     }
 }
