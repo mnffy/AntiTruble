@@ -91,7 +91,6 @@
         return str.split('_')[1];
     }
 
-
     function onSearch() {
         var input, filter, table, tr, td, i, txtValue;
         input = document.getElementById("searchInput");
@@ -111,10 +110,6 @@
         }
     }
 
-    function checkAvailible(repairId) {
-
-    }
-
     function onClickAddDefects(id) {
         var equipmentId = $("#idEquipment_" + getSecondPart(id)).val();
         var repairId = $("#repairId_" + getSecondPart(id)).val(); 
@@ -127,7 +122,6 @@
             },
             dataType: "html",
             success: function (data) {
-                debugger;
                 var result = JSON.parse(data);
                 if (result.availible == true) {
                     $('#equipment-list').hide();

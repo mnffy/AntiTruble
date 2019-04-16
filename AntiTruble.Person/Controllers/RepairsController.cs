@@ -236,7 +236,7 @@ namespace AntiTruble.Person.Controllers
                                .AddParameter(new Parameter("personId", person.PersonId, ParameterType.RequestBody))));
                     repairs = JsonConvert.DeserializeObject<IEnumerable<RepairInfo>>(repairMksResult.Data).ToList();
                 }
-                if (person.Role == (byte)PersonTypes.Administator)
+                else if (person.Role == (byte)PersonTypes.Administator)
                 {
                     var repairMksResult = JsonConvert.DeserializeObject<MksResponseResult>(
                         await RequestExecutor.ExecuteRequest(Scope.RepairsMksUrl,

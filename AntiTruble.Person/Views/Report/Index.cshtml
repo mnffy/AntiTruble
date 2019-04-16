@@ -16,7 +16,6 @@
             <th>Статус ремонта</th>
             <th>Дата начала</th>
             <th>Завершение</th>
-            <th>Мастер</th>
             <th>Клиент</th>
             <th>Тип ремонта</th>
             <th>Стоимость</th>
@@ -75,6 +74,11 @@
                             Text = "Заявка отклонена",
                             Value = RepairStatuses.Cancel.ToString()
                         });
+                        listItems.Add(new SelectListItem
+                        {
+                            Text = "Заявка оплачена",
+                            Value = RepairStatuses.Paid.ToString()
+                        });
                         listItems.First(x => x.Value == repair.Status.ToString()).Selected = true;
                         var status = listItems.First(x => x.Value == repair.Status.ToString()).Text;
                     }
@@ -84,7 +88,6 @@
                 </td>
                 <td>@repair.StartDate.Value.ToShortDateString()</td>
                 <td>@repair.EndDate.Value.ToShortDateString()</td>
-                <td>@repair.Master.Fio</td>
                 <td>@repair.Client.Fio</td>
 
                 <td>

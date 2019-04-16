@@ -14,10 +14,7 @@
             <label>Клиент:</label><br />
             @Model.Client.Fio<br />
         </div>
-        <div class="form-group">
-            <label>Мастер:</label><br />
-            @Model.Master.Fio<br />
-        </div>
+       
         @{
             var listItems = new List<SelectListItem>();
             listItems.Add(new SelectListItem
@@ -166,7 +163,8 @@
             data: { "repairId": id },
                   dataType: "html",
             success: function (data) {
-                if (data.data == "false") {
+                var result = JSON.parse(data);
+                if (result.data == "false") {
                     alert("Недостаточно средств!");
                 }
                 else {
