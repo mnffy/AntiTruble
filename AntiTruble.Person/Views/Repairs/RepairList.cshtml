@@ -97,6 +97,7 @@
                     @if (ViewBag.Role == (byte)PersonTypes.Client)
                     {
                         @status
+                        @Html.DropDownList("StatusDDL", listItems, null, new { @id = "statusDDL", @style = "display:none", @class = "form-control", @onchange = "OnChangeStatusDDL(this.value, this.id)" })
                     }
                     else
                     {
@@ -118,19 +119,23 @@
                 </td>
                 @if (ViewBag.Role == PersonTypes.Administator)
                 {
-                    <td>
-                        @if (repair.Master == null)
-                        {
-                            @Html.DropDownList("masterDDL",
-                                new SelectList(ViewBag.Masters),
-                                "Мастер",
-                                new { @id = "masterDDL", @style = "width: 178px; height: 30px;", @class = "form-control", @onchange = "OnChangeMasterDDL(this.value, this.id)" })
-                        }
-                        else
-                        {
-                            @repair.Master.Fio
-                        }
-                    </td>
+                <td>
+                    @if (repair.Master == null)
+                    {
+                        @Html.DropDownList("masterDDL",
+                            new SelectList(ViewBag.Masters),
+                            "Мастер",
+                            new { @id = "masterDDL", @style = "width: 178px; height: 30px;", @class = "form-control", @onchange = "OnChangeMasterDDL(this.value, this.id)" })
+                    }
+                    else
+                    {
+                        @Html.DropDownList("masterDDL",
+                           new SelectList(ViewBag.Masters),
+                           "Мастер",
+                           new { @id = "masterDDL", @style = "display:none; width: 178px; height: 30px;", @class = "form-control", @onchange = "OnChangeMasterDDL(this.value, this.id)" })
+                        @repair.Master.Fio
+                    }
+                </td>
                 }
                 @if (ViewBag.Role == PersonTypes.Client)
                 {
@@ -242,6 +247,7 @@
 
     function OnChangeMasterDDL(val, id) {
         var repairId = $("#repairId_" + getSecondPart(id)).val();
+        debugger;
         var urlPath = '@Url.Action("UpdateMaster", "Repairs")';
         $.ajax({
             type: "POST",
@@ -261,7 +267,6 @@
     }
 
     function onClickReportGenerate(id) {
-        debugger;
         var repairId = $("#repairId_" + getSecondPart(id)).val();
         $('#repair-list').hide();
               var urlPath = '@Url.Action("RepairDetails", "Repairs")';

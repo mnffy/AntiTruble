@@ -92,6 +92,9 @@ namespace AntiTruble.Person.Core
 
         public async Task Registration(PersonModel model)
         {
+            var userInDb = await _context.Persons.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber);
+            if (userInDb != null)
+                throw new Exception("Пользователь уже зарегистрирован. Пожалуйста, укажите другой номер телефона");
             var person = new Persons
             {
                 Fio = model.Fio,
